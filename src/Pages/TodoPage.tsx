@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Badge,
   Button,
@@ -26,7 +26,13 @@ import {
 } from "../apis/todoapi.ts";
 import { useNavigate } from "react-router";
 import { LogoutUser } from "../apis/AuthApi.ts";
-import { useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+ import { useFormik } from 'formik';
 // import { LogoutUser } from "../apis/AuthApi.ts";
 const useStyle = makeStyles({
   container: {
@@ -79,157 +85,130 @@ const useStyle = makeStyles({
 
 function TodoPage() {
   const classes = useStyle();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const [todo, setTodo] = useState<Omit<Todo, "id" | "isDone">>({
-    desc: "",
-    status: "Low",
-  });
-  const [todoList, setTodoList] = useState<Todo[]>([]);
+
+  const [page, setPage] = useState<number>(1);
   const [isEditing, setIsEditing] = useState<Boolean>(false);
-  const [toedit, setTOedit] = useState<Omit<Todo, "desc" | "status">>({
-    id: "",
-    isDone: true,
-  });
-  const navigate = useNavigate()
-
-
-  const ResetTodo = () => {
-    setTodo({
-      desc: "",
-      status: "Low",
-    });
-  };
-
-  const AddData = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!todo.desc) {
-      alert("Enter a valid task");
-      return;
+  const [toedit, setTOedit] = useState<string>("");
+  const formik = useFormik({
+    initialValues:{
+      desc:"",
+      status:"Low"
+    },
+    onSubmit:(values ,{ resetForm })=> {
+      isEditing?EditData.mutate(values):AddData.mutate(values)
+      resetForm()
     }
-    const data = await createTodo(todo);
-    const Id: string = data ? data.result : "";
-    const newTodo: Todo = {
-      id: Id,
-      isDone: false,
-      ...todo,
-    };
-    const newData: Todo[] = [...todoList, newTodo];
-    console.log(newData);
-    setTodoList(newData);
-    ResetTodo();
-  };
+  })
 
-  const DeleteData = async (id: string) => {
-    await DeleteTodo(id);
-    const newData: Todo[] = todoList.filter((e) => {
-      return e.id != id;
-    });
-    if (isEditing && toedit.id == id) {
-      ResetTodo();
-    }
-    setTodoList(newData);
-  };
 
-  const UpdateStatus = async (id: string) => {
-    await UpdateStatusApi(id);
-    const newData: Todo[] = todoList.map((e) => {
-      if (e.id == id) {
-        return { ...e, isDone: !e.isDone };
-      }
-      return e;
-    });
-    setTodoList(newData);
-  };
 
   const ReadyForEdit = (e: Todo) => {
     const edit: boolean = !isEditing;
     setIsEditing(edit);
     const { id, isDone, ...todoWithoutId } = e;
-    setTOedit({ id, isDone });
-    setTodo(todoWithoutId);
-    isEditing ? ResetTodo() : setTodo(todoWithoutId);
+    setTOedit( id);
+    formik.setValues({desc:todoWithoutId.desc , status:todoWithoutId.status});
+    isEditing ? formik.setValues({desc:"" , status:"Low"}) : formik.setValues({desc:todoWithoutId.desc , status:todoWithoutId.status});
   };
-
-  const EditData = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!todo.desc) {
-      alert("Enter a valid task");
-      return;
-    }
-    console.log(todo);
-    await UpdateTodo(toedit.id, todo);
-    const newData: Todo[] = todoList.map((e) => {
-      if (e.id == toedit.id) {
-        return { ...toedit, ...todo };
-      }
-      return e;
-    });
-    setIsEditing(false);
-    ResetTodo();
-    setTodoList(newData);
-  };
-
-  const HandleInput = (name: keyof typeof todo, value: string) => {
-    setTodo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
+  
   const Logout = async () => {
     await LogoutUser();
-        navigate("/login");
-  }
-
-  const Load = async () => {
-    console.time("getTodo");
-
-    const data = await getTodo();
-
-    console.timeEnd("getTodo");
-    // console.log(data);
-    setTodoList(data?.result);
+    navigate("/login");
   };
-
-  useEffect(() => {
-    Load();
-  }, []);
-
-  const {data} =useQuery<Todo[]>({
-    queryKey : ["getTodos"],
-    queryFn :  getTodo
+  
+  const EditData = useMutation({
+    mutationFn : (todo: Omit<Todo, "id" | "isDone">)=>UpdateTodo(toedit , todo),
+    onSuccess: (_data ,todo: Omit<Todo, "id" | "isDone">) => {
+      queryClient.setQueryData<Todo[]>(["getTodos", page], (oldData) => {
+        return oldData?.map((task) => {
+          if (task.id == toedit) {
+            return { ...task, desc:todo.desc, status:todo.status };
+          }
+          return task;
+        });
+      });
+    },
   })
+
+  const UpdateStatus = useMutation({
+    mutationFn: (id: string) => UpdateStatusApi(id),
+    onSuccess: (_data, id: string) => {
+      queryClient.setQueryData<Todo[]>(["getTodos", page], (oldData) => {
+        return oldData?.map((task) => {
+          if (task.id == id) {
+            return { ...task, isDone: !task.isDone };
+          }
+          return task;
+        });
+      });
+    },
+  });
+
+  const DeleteData = useMutation({
+    mutationFn: (id: string) => DeleteTodo(id),
+    onSuccess: (_data, id: string) => {
+      queryClient.setQueryData<Todo[]>(["getTodos", page], (oldData) => {
+        return oldData?.filter((task) => task.id != id);
+      });
+    },
+  });
+
+  const AddData = useMutation({
+    mutationFn: (todo: Omit<Todo, "id" | "isDone">) => createTodo(todo),
+    onSuccess: (_data, todo: Omit<Todo, "id" | "isDone">) => {
+      queryClient.setQueryData<Todo[]>(["getTodos", page], (oldData) => {
+        const taskId = _data.result;
+        const newTodo: Todo = {
+          id: taskId,
+          isDone: false,
+          ...todo,
+        };
+        return[newTodo , ...(oldData??[])]
+      });
+    },
+  });
+
+  const { data } = useQuery<Todo[]>({
+    queryKey: ["getTodos", page],
+    queryFn: () => getTodo(page),
+    placeholderData: keepPreviousData,
+    // staleTime:1000,
+    // refetchInterval:10000,
+    // refetchIntervalInBackground:true
+  });
 
   return (
     <div className={classes.container}>
       <div className={classes.Heading}>
         <h1 className={classes.HeadingText}>Todo List</h1>
         <Button className={classes.button} onClick={Logout}>
-            Logout
+          Logout
         </Button>
       </div>
       <form
-        onSubmit={(e) => (isEditing ? EditData(e) : AddData(e))}
+        onSubmit={formik.handleSubmit}
         className={classes.Form}
       >
         <Input
           type="text"
           name="desc"
           required
-          onChange={(e) => HandleInput("desc", e.target.value)}
+          onChange={formik.handleChange}
           placeholder="Enter the task"
-          value={todo.desc}
+          value={formik.values.desc}
           className={classes.input}
         />
 
         <Dropdown
           className={classes.dropdown}
-          value={todo.status}
-          selectedOptions={[todo.status]}
+          value={formik.values.status}
+          selectedOptions={[formik.values.status]}
           name="status"
           onOptionSelect={(_, e) => {
-            HandleInput("status", e.optionValue as string);
-            console.log(e);
+            formik.setFieldValue("status", e.optionValue as string);
           }}
         >
           {["Low", "Medium", "High"].map((option) => (
@@ -253,7 +232,7 @@ function TodoPage() {
               <TableCell style={{ width: "10%" }}>
                 <Switch
                   checked={item.isDone}
-                  onChange={() => UpdateStatus(item.id)}
+                  onChange={() => UpdateStatus.mutate(item.id)}
                 />
               </TableCell>
               <TableCell
@@ -261,7 +240,7 @@ function TodoPage() {
                   width: "70%",
                   whiteSpace: "normal",
                   wordBreak: "break-word",
-                  textDecoration: item.isDone ? "line-through" : "none"
+                  textDecoration: item.isDone ? "line-through" : "none",
                 }}
               >
                 {item.desc}
@@ -286,12 +265,22 @@ function TodoPage() {
                 />
               </TableCell>
               <TableCell style={{ width: "5%" }}>
-                <DeleteDismiss20Regular onClick={() => DeleteData(item.id)} />
+                <DeleteDismiss20Regular
+                  onClick={() => DeleteData.mutate(item.id)}
+                />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      <div>
+        <button onClick={() => setPage(page - 1)} disabled={page < 2}>
+          prev
+        </button>
+        <p>{page}</p>
+        <button onClick={() => setPage(page + 1)}>next</button>
+      </div>
     </div>
   );
 }

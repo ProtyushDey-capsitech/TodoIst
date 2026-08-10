@@ -6,8 +6,9 @@ export const createTodo = async (PostData: Omit<Todo,"id"| "isDone">) => {
   return res.data
 };
 
-export const getTodo = async () => {
-  const res = await api.get("/Todo/getList");
+export const getTodo = async (page:number) => {
+  const res = await api.get("/Todo/getList",{params:{Page:page}});
+  // https://localhost:5001/api/Todo/getList?Page=1&PageSize=10
   return res.data.result
 };
 export const UpdateStatusApi = async (taskid:string) => {

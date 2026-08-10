@@ -1,8 +1,9 @@
 import { Button, Input, Label, makeStyles } from "@fluentui/react-components";
-import { useState } from "react";
-import type { LoginPayload } from "../apis/types";
 import { Login } from "../apis/AuthApi";
 import { useNavigate } from "react-router";
+import { useFormik } from "formik";
+import { useMutation } from "@tanstack/react-query";
+import type { LoginPayload } from "../apis/types";
 
 const useStyle = makeStyles({
   card: {
@@ -47,45 +48,41 @@ const useStyle = makeStyles({
 
 const LoginPage = () => {
   const styles = useStyle();
-  const nevigate = useNavigate()
-  const [LoginPaYload, setLoginPayload] = useState<LoginPayload>({
-    userName: "",
-    password: "",
-  });
-  const HandleInput = (key: keyof LoginPayload, value: string) => {
-    const payload = { ...LoginPaYload, [key]: value };
-    setLoginPayload(payload);
-  };
-  
-  const login = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    var response = await Login(LoginPaYload);
-    if (response.status == false) {
-      alert("Something went wrong");
-      return;
+  const navigate = useNavigate()
+
+
+
+ const formik = useFormik({
+    initialValues:{
+      userName:"",
+      password:"Low"
+    },
+    onSubmit:(values ,{ resetForm })=> {
+      loginmutation.mutate(values)
+      resetForm()
     }
-    nevigate("/");
-    console.log("logged in ");
-    setLoginPayload({
-      userName: "",
-      password: "",
-    });
-    console.log(response);
-  };
+  })
+  
+  const loginmutation = useMutation({
+    mutationFn:(values:LoginPayload)=>Login(values),
+    onSuccess:(_data)=>{
+      navigate("/")
+    }
+  })
 
   return (
     <div className={styles.card}>
       <h1 className={styles.Title}>Login Page</h1>
-      <form className={styles.Form} onSubmit={(e) => login(e)}>
+      <form className={styles.Form} onSubmit={formik.handleSubmit}>
         <Label htmlFor="Email">Email</Label>
         <Input
           id="Email"
           type="email"
           name="userName"
-          onChange={(e) => HandleInput("userName", e.target.value)}
+          onChange={formik.handleChange}
           placeholder="Enter the mail"
           required
-          value={LoginPaYload.userName}
+          value={formik.values.userName}
           className={styles.Input}
         />
         <Label htmlFor="Password">Password</Label>
@@ -93,9 +90,9 @@ const LoginPage = () => {
           type="password"
           name="password"
           required
-          onChange={(e) => HandleInput("password", e.target.value)}
+          onChange={formik.handleChange}
           placeholder="Enter the task"
-          value={LoginPaYload.password}
+          value={formik.values.password}
           className={styles.Input}
         />
 
