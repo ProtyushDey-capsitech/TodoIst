@@ -8,7 +8,7 @@ export const createTodo = async (PostData: Omit<Todo,"id"| "isDone">) => {
 
 export const getTodo = async () => {
   const res = await api.get("/Todo/getList");
-  return res.data
+  return res.data.result
 };
 export const UpdateStatusApi = async (taskid:string) => {
   const res = await api.put("/Todo/UpdateStatus",{},{params:{id:taskid}});

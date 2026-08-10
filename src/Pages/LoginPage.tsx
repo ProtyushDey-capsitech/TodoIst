@@ -2,8 +2,6 @@ import { Button, Input, Label, makeStyles } from "@fluentui/react-components";
 import { useState } from "react";
 import type { LoginPayload } from "../apis/types";
 import { Login } from "../apis/AuthApi";
-import { useDispatch } from "react-redux";
-import { LoginState } from "../redux/TokenCounterSlice";
 import { useNavigate } from "react-router";
 
 const useStyle = makeStyles({
@@ -48,8 +46,6 @@ const useStyle = makeStyles({
 });
 
 const LoginPage = () => {
-
-  const dispatch = useDispatch()
   const styles = useStyle();
   const nevigate = useNavigate()
   const [LoginPaYload, setLoginPayload] = useState<LoginPayload>({
@@ -68,8 +64,6 @@ const LoginPage = () => {
       alert("Something went wrong");
       return;
     }
-    const AToken : string = response.result.token;
-    dispatch(LoginState(AToken));
     nevigate("/");
     console.log("logged in ");
     setLoginPayload({

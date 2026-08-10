@@ -24,9 +24,9 @@ import {
   UpdateStatusApi,
   UpdateTodo,
 } from "../apis/todoapi.ts";
-import { useDispatch } from "react-redux";
-import { LogoutState } from "../redux/TokenCounterSlice.ts";
 import { useNavigate } from "react-router";
+import { LogoutUser } from "../apis/AuthApi.ts";
+import { useQuery } from "@tanstack/react-query";
 // import { LogoutUser } from "../apis/AuthApi.ts";
 const useStyle = makeStyles({
   container: {
@@ -90,8 +90,9 @@ function TodoPage() {
     id: "",
     isDone: true,
   });
-  const dispatch = useDispatch();
   const navigate = useNavigate()
+
+
   const ResetTodo = () => {
     setTodo({
       desc: "",
@@ -176,11 +177,9 @@ function TodoPage() {
   };
 
   const Logout = async () => {
-    // await LogoutUser();
-        dispatch(LogoutState());
+    await LogoutUser();
         navigate("/login");
   }
-
 
   const Load = async () => {
     console.time("getTodo");
@@ -195,6 +194,11 @@ function TodoPage() {
   useEffect(() => {
     Load();
   }, []);
+
+  const {data} =useQuery<Todo[]>({
+    queryKey : ["getTodos"],
+    queryFn :  getTodo
+  })
 
   return (
     <div className={classes.container}>
@@ -211,6 +215,7 @@ function TodoPage() {
         <Input
           type="text"
           name="desc"
+          required
           onChange={(e) => HandleInput("desc", e.target.value)}
           placeholder="Enter the task"
           value={todo.desc}
@@ -243,7 +248,7 @@ function TodoPage() {
         style={{ width: "100%", tableLayout: "fixed" }}
       >
         <TableBody>
-          {todoList.map((item) => (
+          {data?.map((item) => (
             <TableRow key={item.id}>
               <TableCell style={{ width: "10%" }}>
                 <Switch
