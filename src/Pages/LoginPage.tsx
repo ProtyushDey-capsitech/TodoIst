@@ -55,7 +55,7 @@ const LoginPage = () => {
  const formik = useFormik({
     initialValues:{
       userName:"",
-      password:"Low"
+      password:""
     },
     onSubmit:(values ,{ resetForm })=> {
       loginmutation.mutate(values)
