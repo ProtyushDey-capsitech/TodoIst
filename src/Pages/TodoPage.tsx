@@ -175,6 +175,7 @@ function TodoPage() {
     queryKey: ["getTodos", page],
     queryFn: () => getTodo(page),
     placeholderData: keepPreviousData,
+    
     // staleTime:1000,
     // refetchInterval:10000,
     // refetchIntervalInBackground:true
