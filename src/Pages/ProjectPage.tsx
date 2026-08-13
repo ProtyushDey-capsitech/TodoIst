@@ -19,11 +19,16 @@ import {
 } from "@fluentui/react-icons";
 
 import { useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import ProjectForm from "../Components/ProjectForm";
-import { getAllProject } from "../apis/ProjectApi";
-import type { Project } from "../apis/types";
+import { GetAllProject, DeleteProject, UpdatePrjectStatus } from "../apis/ProjectApi";
+import type { Project, Pagination } from "../apis/types";
 
 const useStyles = makeStyles({
   page: {
@@ -94,7 +99,7 @@ const useStyles = makeStyles({
     overflowWrap: "anywhere",
     wordBreak: "break-word",
     display: "-webkit-box",
-    WebkitLineClamp: 2,
+    WebkitLineClamp: 1,
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
   },
@@ -122,26 +127,105 @@ const useStyles = makeStyles({
     textAlign: "center",
     color: tokens.colorNeutralForeground3,
   },
+  paginationbox:{
+    display:"flex",
+    justifyContent:"center",
+    marginTop:"20px",
+    gap: "10px",
+    alignItems:"center",
+    fontSize:"16px"
+  },
+  paginationbutton:{
+    height:"30px",
+    width:"30px",
+    boxShadow:tokens.shadow2,
+    borderRadius:"5px"
+  }
 });
 
 const ProjectPage = () => {
   const styles = useStyles();
+  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editableData, setEditableData] = useState<Omit<Project,"status">>(
-    
-  )
+  const [pages, setPages] = useState<number>(1)
+  const [editableData, setEditableData] = useState<
+    Omit<Project, "status" | "taskCount">
+  >({
+    id: "",
+    name: "",
+    desc: "",
+  });
 
-    const ReadyforEdit = ()=>{
-        setOpen(true); 
-        setIsEditing(true)
+  const ReadyforEdit = (id: string, name: string, desc: string) => {
+    const project: Omit<Project, "status" | "taskCount"> = {
+      id: id,
+      name: name,
+      desc: desc,
+    };
+    console.log(project);
+    setEditableData(project);
+    setOpen(true);
+    setIsEditing(true);
+  };
 
+  const Delete = useMutation({
+    mutationFn: (id: string) => DeleteProject(id),
+    mutationKey: ["ProjectDelete"],
+    onSuccess: (_data, id: string) => {
+      queryClient.setQueryData<Pagination<Project>>(
+        ["getProjects",pages],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            total: Math.max(0, oldData.total - 1),
+            results: oldData.results.filter((project) => project.id !== id),
+          };
+        },
+      );
+    },
+  });
+
+const UpdateStatus = useMutation({
+  mutationFn: (id: string) => UpdatePrjectStatus(id),
+
+  mutationKey: ["ProjectStatus"],
+
+  onSuccess: (_data, id) => {
+    if (!_data.status) {
+      console.log("Something went wrong:", _data.message);
+      return;
     }
 
-  const { data, isLoading } = useQuery<Project[]>({
-    queryKey: ["getProjects"],
-    queryFn: getAllProject,
+    queryClient.setQueryData<Pagination<Project>>(
+      ["getProjects", pages],
+      (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          results: oldData.results.map((project) => {
+            if (project.id === id) {
+              return {
+                ...project,
+                status: !project.status,
+              };
+            }
+
+            return project;
+          }),
+        };
+      }
+    );
+  },
+});
+
+  const { data, isLoading } = useQuery<Pagination<Project>>({
+    queryKey: ["getProjects",pages],
+    queryFn: ()=>GetAllProject(pages),
     placeholderData: keepPreviousData,
   });
 
@@ -169,6 +253,8 @@ const ProjectPage = () => {
           setIsEditing(false);
         }}
         isEditing={isEditing}
+        EditableData={editableData}
+        pages={pages}
       />
 
       {/* project table */}
@@ -213,23 +299,18 @@ const ProjectPage = () => {
                   <div className={styles.empty}>Loading projects...</div>
                 </TableCell>
               </TableRow>
-            ) : data && data.length > 0 ? (
-              data.map((item) => (
+            ) : data && data.results.length > 0 ? (
+              data.results.map((item) => (
                 <TableRow key={item.id}>
-                  {/* STATUS */}
+                  {/* project status */}
                   <TableCell className={styles.cell}>
                     <Dropdown
                       className={styles.statusDropdown}
                       size="small"
                       value={item.status ? "Done" : "Pending"}
                       selectedOptions={[item.status ? "done" : "pending"]}
-                      onOptionSelect={(_, option) => {
-                        const isDone = option.optionValue === "done";
-
-                        // UpdateStatus.mutate({
-                        //   id: item.id,
-                        //   status: isDone,
-                        // });
+                      onOptionSelect={(_) => {
+                        UpdateStatus.mutate(item.id);
                       }}
                     >
                       <Option value="pending">Pending</Option>
@@ -238,20 +319,19 @@ const ProjectPage = () => {
                     </Dropdown>
                   </TableCell>
 
-                  {/* PROJECT NAME */}
+                  {/* project name */}
                   <TableCell className={styles.cell}>
                     <span
+                      className={styles.description}
                       style={{
                         textDecoration: item.status ? "line-through" : "none",
-                        overflowWrap: "anywhere",
-                        wordBreak: "break-word",
                       }}
                     >
                       {item.name}
                     </span>
                   </TableCell>
 
-                  {/* DESCRIPTION */}
+                  {/* project  dcesc*/}
                   <TableCell className={styles.cell}>
                     <div
                       className={styles.description}
@@ -263,13 +343,12 @@ const ProjectPage = () => {
                     </div>
                   </TableCell>
 
-                  {/* TASK COUNT */}
-                  <TableCell className={`${styles.cell} ${styles.tasks}`}>
-                    {/* {item.taskCount ?? 0} */}
-                    10
+                  {/* task count */}
+                  <TableCell className={styles.cell}>
+                    {item.taskCount}
                   </TableCell>
 
-                  {/* ACTIONS */}
+                  {/* action button */}
                   <TableCell className={styles.cell}>
                     <div className={styles.actions}>
                       <Button
@@ -289,7 +368,9 @@ const ProjectPage = () => {
                         icon={<ClipboardTextEdit20Regular />}
                         aria-label="Edit project"
                         title="Edit project"
-                        onClick={() => ReadyforEdit()}
+                        onClick={() =>
+                          ReadyforEdit(item.id, item.name, item.desc)
+                        }
                       />
 
                       <Button
@@ -298,9 +379,7 @@ const ProjectPage = () => {
                         icon={<DeleteDismiss20Regular />}
                         aria-label="Delete project"
                         title="Delete project"
-                        // onClick={() =>
-                        //   DeleteProject.mutate(item.id)
-                        // }
+                        onClick={() => Delete.mutate(item.id)}
                       />
                     </div>
                   </TableCell>
@@ -316,6 +395,13 @@ const ProjectPage = () => {
           </TableBody>
         </Table>
       </div>
+
+      {/* pagination button */}
+      <div className={styles.paginationbox}>
+        <button disabled={pages<2} onClick={()=>setPages(pages-1)} className={styles.paginationbutton}>P</button>
+        <p>{pages}</p>
+        <button disabled={pages >= Math.ceil((data?.total ?? 0) / 10)} onClick={()=>setPages(pages+1)} className={styles.paginationbutton}>N</button>
+        </div>
     </div>
   );
 };

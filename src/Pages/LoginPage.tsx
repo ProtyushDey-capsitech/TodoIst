@@ -95,9 +95,8 @@ const LoginPage = () => {
       password: "",
     },
     validationSchema: inputError,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: (values) => {
       loginmutation.mutate(values);
-      resetForm();
     },
   });
 
@@ -105,11 +104,12 @@ const LoginPage = () => {
     mutationFn: (values: LoginPayload) => Login(values),
     onSuccess: (_data) => {
       navigate("/");
+      formik.resetForm();
     },
-    onError:(_data)=>{
+    onError: (_data) => {
       setAccountExists(true);
-        return;
-    }
+      return;
+    },
   });
 
   return (

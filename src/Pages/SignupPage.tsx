@@ -128,13 +128,14 @@ const SignupPage = () => {
   });
 
   const signupmutation = useMutation({
-    mutationFn: (values: Omit<SignupPayload,"role">) => Signup(values),
+    mutationFn: (values: Omit<SignupPayload, "role">) => Signup(values),
     onSuccess: (_data) => {
       if (!_data.status) {
         setAccountExists(true);
         return;
       }
       navigate("/login");
+      formik.resetForm();
     },
   });
 

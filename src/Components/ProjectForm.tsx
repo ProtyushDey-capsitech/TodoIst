@@ -16,13 +16,15 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import type { Project } from "../apis/types";
-import { createProject } from "../apis/ProjectApi";
+import type { Pagination, Project } from "../apis/types";
+import { CreateProject, EditProject } from "../apis/ProjectApi";
 
 interface props {
   modalopen: boolean;
   modaldisplay: () => void;
   isEditing: boolean;
+  EditableData: Omit<Project, "status" | "taskCount">;
+  pages: number;
 }
 
 const useStyle = makeStyles({
@@ -50,7 +52,13 @@ const useStyle = makeStyles({
   },
 });
 
-const ProjectForm = ({ modalopen, modaldisplay, isEditing }: props) => {
+const ProjectForm = ({
+  modalopen,
+  modaldisplay,
+  isEditing,
+  EditableData,
+  pages,
+}: props) => {
   const styles = useStyle();
   const queryClient = useQueryClient();
 
@@ -66,52 +74,81 @@ const ProjectForm = ({ modalopen, modaldisplay, isEditing }: props) => {
   });
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      desc: "",
-    },
+    enableReinitialize: true,
+    initialValues: isEditing
+      ? {
+          name: EditableData.name,
+          desc: EditableData.desc,
+        }
+      : {
+          name: "",
+          desc: "",
+        },
     validationSchema: inputError,
     onSubmit: (values, { resetForm }) => {
-      console.log(values);
-      projectAdd.mutate(values);
+      isEditing ? projectEdit.mutate(values) : projectAdd.mutate(values);
       resetForm();
       modaldisplay();
     },
   });
 
   const projectAdd = useMutation({
-    mutationFn: (values: Omit<Project, "id" | "status">) =>
-      createProject(values),
+    mutationFn: (values: Omit<Project, "id" | "status" | "taskCount">) =>
+      CreateProject(values),
     mutationKey: ["ProjectAdd"],
-    onSuccess: (_data, project: Omit<Project, "id" | "status">) => {
-      queryClient.setQueryData<Project[]>(["getProjects"], (oldData) => {
-        const taskId = _data.result;
-        const newTodo: Project = {
-          id: taskId,
-          status: false,
-          ...project,
-        };
-        return [newTodo, ...(oldData ?? [])];
-      });
+    onSuccess: (_data, project) => {
+      queryClient.setQueryData<Pagination<Project>>(
+        ["getProjects", pages],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          const newProject: Project = {
+            id: _data.result,
+            status: false,
+            taskCount: 0,
+            ...project,
+          };
+
+          return {
+            ...oldData,
+            results: [newProject, ...oldData.results].slice(0, 10),
+            total: oldData.total + 1,
+          };
+        },
+      );
     },
   });
 
-  //     const projectEdit = useMutation({
-  //     mutationFn: (values: Omit<Project, "id" | "status">) =>
-  //       createProject(values),
-  //     mutationKey: ["ProjectAdd"],
-  //     onSuccess: (_data, project: Omit<Project, "id" | "status">) => {
-  //       queryClient.setQueryData<Project[]>(["getProjects"], (oldData) => {
-  //         const taskId = _data.result;
-  //         const newTodo: Project = {
-  //           id: taskId,
-  //           status: false,
-  //           ...project,
-  //         };
-  //         return [newTodo, ...(oldData ?? [])];
-  //       });
-  //     },
-  //   });
+  const projectEdit = useMutation({
+    mutationFn: (values: Omit<Project, "id" | "status" | "taskCount">) =>
+      EditProject(values, EditableData.id),
+
+    mutationKey: ["ProjectEdit"],
+
+    onSuccess: (_data, projectdata) => {
+      queryClient.setQueryData<Pagination<Project>>(
+        ["getProjects", pages],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            results: oldData.results.map((project) => {
+              if (project.id === EditableData.id) {
+                return {
+                  ...project,
+                  desc: projectdata.desc,
+                  name: projectdata.name,
+                };
+              }
+
+              return project;
+            }),
+          };
+        },
+      );
+    },
+  });
 
   return (
     <Dialog

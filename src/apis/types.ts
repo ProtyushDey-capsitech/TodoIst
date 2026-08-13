@@ -15,8 +15,8 @@ export interface SignupPayload {
   name: {
     first: string;
     last: string;
-  },
-  role:string
+  };
+  role: string;
 }
 
 export interface Project {
@@ -24,4 +24,13 @@ export interface Project {
   id: string;
   desc: string;
   status: boolean;
+  taskCount:number
+
+}
+
+export interface Pagination<T> {
+  results: T[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
