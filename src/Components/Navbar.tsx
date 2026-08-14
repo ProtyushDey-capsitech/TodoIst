@@ -18,6 +18,8 @@ import {
   PersonCircle32Regular,
   SignOut20Regular,
 } from "@fluentui/react-icons";
+import { useNavigate } from "react-router";
+import { LogoutUser } from "../apis/AuthApi";
 
 const useStyles = makeStyles({
   nav: {
@@ -56,7 +58,7 @@ export const Navbar = (): JSXElement => {
   const styles = useStyles();
 
   const [isOpen, setIsOpen] = React.useState(false);
-
+  const navigate = useNavigate();
   return (
     <>
       <NavDrawer
@@ -87,6 +89,10 @@ export const Navbar = (): JSXElement => {
             appearance="subtle"
             icon={<SignOut20Regular />}
             className={styles.logout}
+            onClick={()=>{
+              navigate("/login")
+              LogoutUser()
+            }}
           >
             Logout
           </Button>

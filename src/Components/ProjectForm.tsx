@@ -99,7 +99,7 @@ const ProjectForm = ({
     mutationKey: ["ProjectAdd"],
     onSuccess: (_data, project) => {
       queryClient.setQueryData<Pagination<Project>>(
-        ["getProject", pages],
+        ["getProjects",pages],
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -128,7 +128,7 @@ const ProjectForm = ({
 
     onSuccess: (_data, projectdata) => {
       queryClient.setQueryData<Pagination<Project>>(
-        ["getProject", pages],
+        ["getProjects",pages],
         (oldData) => {
           if (!oldData) return oldData;
 

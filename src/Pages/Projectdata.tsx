@@ -596,8 +596,8 @@ const Projectdata = () => {
               }}
             >
               <Option value="2024">2024</Option>
-              <Option value="2024">2025</Option>
-              <Option value="2024">2026</Option>
+              <Option value="2025">2025</Option>
+              <Option value="2026">2026</Option>
             </Dropdown>
           </div>
 
