@@ -694,7 +694,7 @@ const Projectdata = () => {
               disabled={pages < 2}
               onClick={() => setPages(pages - 1)}
             >
-              Previous
+              P
             </Button>
             <p>1</p>
             <Button
@@ -703,7 +703,7 @@ const Projectdata = () => {
               disabled={pages >= Math.ceil((data?.taskCount ?? 0) / 5)}
               onClick={() => setPages(pages + 1)}
             >
-              Next
+              N
             </Button>
           </div>
         </div>
