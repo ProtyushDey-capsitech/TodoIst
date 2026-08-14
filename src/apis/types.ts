@@ -1,8 +1,10 @@
-export interface Todo {
+export interface Task {
   id: string;
+  name: string;
   desc: string;
-  isDone: boolean;
+  priority: string;
   status: string;
+  createdAt: string;
 }
 
 export interface LoginPayload {
@@ -24,8 +26,7 @@ export interface Project {
   id: string;
   desc: string;
   status: boolean;
-  taskCount:number
-
+  taskCount: number;
 }
 
 export interface Pagination<T> {
@@ -33,4 +34,13 @@ export interface Pagination<T> {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface ProjectData {
+  tasks: Task[];
+  id: string;
+  taskCount: number;
+  status: boolean;
+  name: string;
+  desc: string;
 }

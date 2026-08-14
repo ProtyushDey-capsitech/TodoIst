@@ -11,6 +11,12 @@ export const GetAllProject = async (pages:number) => {
   return res.data.result
 };
 
+export const getProjectById = async (id:string) => {
+  const res = await api.get("/Project/GetProjectById",{params:{projectId:id}});
+  return res.data.result
+};
+
+
 export const EditProject = async (PostData: Omit<Project,"id"| "status" | "taskCount">,id:string) => {
   const res = await api.patch("/Project/UpdateProject",PostData,{params:{projectId:id}});
   return res.data.result

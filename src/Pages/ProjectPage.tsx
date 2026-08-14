@@ -29,6 +29,7 @@ import {
 import ProjectForm from "../Components/ProjectForm";
 import { GetAllProject, DeleteProject, UpdatePrjectStatus } from "../apis/ProjectApi";
 import type { Project, Pagination } from "../apis/types";
+import { useNavigate } from "react-router";
 
 const useStyles = makeStyles({
   page: {
@@ -146,6 +147,7 @@ const useStyles = makeStyles({
 const ProjectPage = () => {
   const styles = useStyles();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -169,7 +171,7 @@ const ProjectPage = () => {
     setOpen(true);
     setIsEditing(true);
   };
-
+  
   const Delete = useMutation({
     mutationFn: (id: string) => DeleteProject(id),
     mutationKey: ["ProjectDelete"],
@@ -357,9 +359,9 @@ const UpdateStatus = useMutation({
                         icon={<Open20Regular />}
                         aria-label="View project"
                         title="View project"
-                        // onClick={() =>
-                        //   navigate(`/projects/${item.id}`)
-                        // }
+                        onClick={() =>
+                          navigate(`/project/${item.id}`)
+                        }
                       />
 
                       <Button
