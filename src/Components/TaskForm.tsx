@@ -28,10 +28,6 @@ interface props {
   isEditing: boolean;
   id: string;
   EditableData: Omit<Task, "status" | "createdAt">;
-  pages: number;
-  month:number,
-  year:number,
-  search:string
 }
 
 const useStyle = makeStyles({
@@ -65,10 +61,6 @@ const TaskForm = ({
   isEditing,
   id,
   EditableData,
-  pages,
-  month,
-  year,
-  search
 }: props) => {
   const styles = useStyle();
   const queryClient = useQueryClient();
@@ -110,28 +102,10 @@ const TaskForm = ({
     mutationFn: (values: Omit<Task, "id" | "status" | "createdAt">) =>
       createTask(values, id),
     mutationKey: ["ProjectAdd"],
-    onSuccess: (_data, task) => {
-      queryClient.setQueryData<ProjectData>(
-        ["getProject", pages,month,year,search],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          const newTask: Task = {
-            id: _data.result,
-            name: task.name,
-            desc: task.desc,
-            priority: task.priority,
-            status: "Todo",
-            createdAt: new Date().toISOString(),
-          };
-
-          return {
-            ...oldData,
-            tasks: [newTask, ...oldData.tasks].slice(0, 5),
-            taskCount: oldData.taskCount + 1,
-          };
-        },
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjectTask"],
+      });
     },
   });
 
@@ -140,28 +114,10 @@ const TaskForm = ({
       UpdateTask(EditableData.id, id, values),
     mutationKey: ["taskEdit"],
 
-    onSuccess: (_data, task) => {
-      queryClient.setQueryData<ProjectData>(
-        ["getProject", pages,month,year,search],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            tasks: oldData.tasks.map((e) => {
-              if (e.id == EditableData.id) {
-                return {
-                  ...e,
-                  name: task.name,
-                  desc: task.desc,
-                  priority: task.priority,
-                };
-              }
-              return e;
-            }),
-          };
-        },
-      );
+        onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjectTask"],
+      });
     },
   });
 

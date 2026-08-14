@@ -16,7 +16,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import type { Pagination, Project } from "../apis/types";
+import type { Project } from "../apis/types";
 import { CreateProject, EditProject } from "../apis/ProjectApi";
 
 interface props {
@@ -24,7 +24,6 @@ interface props {
   modaldisplay: () => void;
   isEditing: boolean;
   EditableData: Omit<Project, "status" | "taskCount">;
-  pages: number;
 }
 
 const useStyle = makeStyles({
@@ -57,8 +56,6 @@ const ProjectForm = ({
   modaldisplay,
   isEditing,
   EditableData,
-  pages,
-
 }: props) => {
   const styles = useStyle();
   const queryClient = useQueryClient();
@@ -97,26 +94,10 @@ const ProjectForm = ({
     mutationFn: (values: Omit<Project, "id" | "status" | "taskCount">) =>
       CreateProject(values),
     mutationKey: ["ProjectAdd"],
-    onSuccess: (_data, project) => {
-      queryClient.setQueryData<Pagination<Project>>(
-        ["getProjects",pages],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          const newProject: Project = {
-            id: _data.result,
-            status: false,
-            taskCount: 0,
-            ...project,
-          };
-
-          return {
-            ...oldData,
-            results: [newProject, ...oldData.results].slice(0, 10),
-            total: oldData.total + 1,
-          };
-        },
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjects"],
+      });
     },
   });
 
@@ -126,28 +107,10 @@ const ProjectForm = ({
 
     mutationKey: ["ProjectEdit"],
 
-    onSuccess: (_data, projectdata) => {
-      queryClient.setQueryData<Pagination<Project>>(
-        ["getProjects",pages],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            results: oldData.results.map((project) => {
-              if (project.id === EditableData.id) {
-                return {
-                  ...project,
-                  desc: projectdata.desc,
-                  name: projectdata.name,
-                };
-              }
-
-              return project;
-            }),
-          };
-        },
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjects"],
+      });
     },
   });
 

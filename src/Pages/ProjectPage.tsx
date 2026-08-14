@@ -175,19 +175,10 @@ const ProjectPage = () => {
   const Delete = useMutation({
     mutationFn: (id: string) => DeleteProject(id),
     mutationKey: ["ProjectDelete"],
-    onSuccess: (_data, id: string) => {
-      queryClient.setQueryData<Pagination<Project>>(
-        ["getProjects",pages],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            total: Math.max(0, oldData.total - 1),
-            results: oldData.results.filter((project) => project.id !== id),
-          };
-        },
-      );
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjects"],
+      });
     },
   });
 
@@ -196,33 +187,11 @@ const UpdateStatus = useMutation({
 
   mutationKey: ["ProjectStatus"],
 
-  onSuccess: (_data, id) => {
-    if (!_data.status) {
-      console.log("Something went wrong:", _data.message);
-      return;
-    }
-
-    queryClient.setQueryData<Pagination<Project>>(
-      ["getProjects", pages],
-      (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          results: oldData.results.map((project) => {
-            if (project.id === id) {
-              return {
-                ...project,
-                status: !project.status,
-              };
-            }
-
-            return project;
-          }),
-        };
-      }
-    );
-  },
+  onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjects"],
+      });
+    },
 });
 
   const { data, isLoading } = useQuery<Pagination<Project>>({
@@ -256,7 +225,6 @@ const UpdateStatus = useMutation({
         }}
         isEditing={isEditing}
         EditableData={editableData}
-        pages={pages}
       />
 
       {/* project table */}

@@ -404,49 +404,25 @@ const Projectdata = () => {
   const UpdateStatus = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       UpdateTaskStatus(id, status),
-    onSuccess: (_data, { id, status }) => {
-      queryClient.setQueryData<ProjectData>(
-        ["getProject", pages,month,year,search],
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return {
-            ...oldData,
-            tasks: oldData.tasks.map((e) => {
-              if (e.id == id) {
-                return {
-                  ...e,
-                  status:status
-              }
-            }
-              return e;
-            }),
-          };
-        },
-      );
+        onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjectTask"],
+      });
     },
   });
 
   const Delete = useMutation({
     mutationFn: (taskid: string) => DeleteTask(taskid),
     mutationKey: ["taskDelete"],
-    onSuccess: (_data, task) => {
-      queryClient.setQueryData<ProjectData>(
-        ["getProject", pages, month, year, search],
-        (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            tasks: oldData.tasks.filter((e) => e.id != task).slice(0, 5),
-            taskCount: oldData.taskCount + 1,
-          };
-        },
-      );
+        onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["getProjectTask"],
+      });
     },
   });
 
   const { data, isPending, isError } = useQuery({
-    queryKey: ["getProject", pages, month, year, search],
+    queryKey: ["getProjectTask", pages, month, year, search],
     queryFn: () => getProjectById(id!, month, year, pages, search),
     enabled: !!id,
     placeholderData: keepPreviousData,
@@ -534,10 +510,6 @@ const Projectdata = () => {
             isEditing={isEditing}
             id={id ?? ""}
             EditableData={editableData}
-            pages={pages}
-            month={month}
-            year={year}
-            search={search}
           />
 
           {/* filters */}
