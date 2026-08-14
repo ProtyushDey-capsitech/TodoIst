@@ -11,8 +11,8 @@ export const GetAllProject = async (pages:number) => {
   return res.data.result
 };
 
-export const getProjectById = async (id:string) => {
-  const res = await api.get("/Project/GetProjectById",{params:{projectId:id}});
+export const getProjectById = async (id:string, month:number, year:number, page:number, search:string) => {
+  const res = await api.get("/Project/GetProjectById",{params:{projectId:id, Month:month, Year:year, Search:search, Page:page}});
   return res.data.result
 };
 

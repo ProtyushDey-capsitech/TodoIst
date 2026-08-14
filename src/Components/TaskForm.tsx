@@ -29,6 +29,9 @@ interface props {
   id: string;
   EditableData: Omit<Task, "status" | "createdAt">;
   pages: number;
+  month:number,
+  year:number,
+  search:string
 }
 
 const useStyle = makeStyles({
@@ -63,6 +66,9 @@ const TaskForm = ({
   id,
   EditableData,
   pages,
+  month,
+  year,
+  search
 }: props) => {
   const styles = useStyle();
   const queryClient = useQueryClient();
@@ -106,7 +112,7 @@ const TaskForm = ({
     mutationKey: ["ProjectAdd"],
     onSuccess: (_data, task) => {
       queryClient.setQueryData<ProjectData>(
-        ["getProject", id, pages],
+        ["getProject", pages,month,year,search],
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -136,7 +142,7 @@ const TaskForm = ({
 
     onSuccess: (_data, task) => {
       queryClient.setQueryData<ProjectData>(
-        ["getProject", id, pages],
+        ["getProject", pages,month,year,search],
         (oldData) => {
           if (!oldData) return oldData;
 

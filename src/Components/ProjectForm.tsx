@@ -58,6 +58,7 @@ const ProjectForm = ({
   isEditing,
   EditableData,
   pages,
+
 }: props) => {
   const styles = useStyle();
   const queryClient = useQueryClient();
@@ -98,7 +99,7 @@ const ProjectForm = ({
     mutationKey: ["ProjectAdd"],
     onSuccess: (_data, project) => {
       queryClient.setQueryData<Pagination<Project>>(
-        ["getProjects", pages],
+        ["getProject", pages],
         (oldData) => {
           if (!oldData) return oldData;
 
@@ -127,7 +128,7 @@ const ProjectForm = ({
 
     onSuccess: (_data, projectdata) => {
       queryClient.setQueryData<Pagination<Project>>(
-        ["getProjects", pages],
+        ["getProject", pages],
         (oldData) => {
           if (!oldData) return oldData;
 

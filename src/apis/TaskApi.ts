@@ -11,10 +11,10 @@ export const createTask = async (postData:Omit<Task,"id"|"status"|"createdAt"> ,
 //   // https://localhost:5001/api/Todo/getList?Page=1&PageSize=10
 //   return res.data.result
 // };
-// export const UpdateStatusApi = async (taskid:string) => {
-//   const res = await api.put("/Todo/UpdateStatus",{},{params:{id:taskid}});
-//   return res.data
-// };
+export const UpdateTaskStatus = async (taskid:string, status:string) => {
+  const res = await api.patch("/Task/UpdateStatus",{},{params:{id:taskid,status:status}});
+  return res.data
+};
 
 export const UpdateTask = async (taskid:string , pid:string, postData:Omit<Task,"id"|"status"|"createdAt">)=>{
   const res = await api.patch("/Task/Updatetask" , postData , {params:{id:taskid,projectId:pid}} )

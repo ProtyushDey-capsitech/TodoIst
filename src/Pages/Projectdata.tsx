@@ -21,12 +21,17 @@ import {
 
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { getProjectById } from "../apis/ProjectApi.ts";
 import TaskForm from "../Components/TaskForm.tsx";
 import type { ProjectData, Task } from "../apis/types.ts";
-import { DeleteTask } from "../apis/TaskApi.ts";
+import { DeleteTask, UpdateTaskStatus } from "../apis/TaskApi.ts";
 
 const useStyles = makeStyles({
   page: {
@@ -346,8 +351,8 @@ const useStyles = makeStyles({
   },
 
   statusDropdown: {
-    width: "90px",
-    minWidth: "90px",
+    width: "120px",
+    minWidth: "120px",
 
     "@media (max-width: 400px)": {
       flex: 1,
@@ -364,6 +369,7 @@ const Projectdata = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [pages, setPages] = useState<number>(1);
+  const [search, setSearch] = useState<string>("");
   const [editableData, setEditableData] = useState<
     Omit<Task, "status" | "createdAt">
   >({
@@ -395,12 +401,38 @@ const Projectdata = () => {
     setIsEditing(true);
   };
 
+  const UpdateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      UpdateTaskStatus(id, status),
+    onSuccess: (_data, { id, status }) => {
+      queryClient.setQueryData<ProjectData>(
+        ["getProject", pages,month,year,search],
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            tasks: oldData.tasks.map((e) => {
+              if (e.id == id) {
+                return {
+                  ...e,
+                  status:status
+              }
+            }
+              return e;
+            }),
+          };
+        },
+      );
+    },
+  });
+
   const Delete = useMutation({
     mutationFn: (taskid: string) => DeleteTask(taskid),
     mutationKey: ["taskDelete"],
     onSuccess: (_data, task) => {
       queryClient.setQueryData<ProjectData>(
-        ["getProject", id, pages],
+        ["getProject", pages, month, year, search],
         (oldData) => {
           if (!oldData) return oldData;
           return {
@@ -413,13 +445,16 @@ const Projectdata = () => {
     },
   });
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["getProject", id, pages],
-    queryFn: () => getProjectById(id!),
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["getProject", pages, month, year, search],
+    queryFn: () => getProjectById(id!, month, year, pages, search),
     enabled: !!id,
+    placeholderData: keepPreviousData,
   });
 
-  if (isLoading) {
+
+
+  if (isPending) {
     return (
       <div className={styles.loading}>
         <Spinner label="Loading project..." />
@@ -445,14 +480,6 @@ const Projectdata = () => {
           onClick={() => navigate(-1)}
         >
           Back
-        </Button>
-
-        <Button
-          appearance="secondary"
-          icon={<Edit20Regular />}
-          //   onClick={() => setTaskModalOpen(true)}
-        >
-          Edit Project
         </Button>
       </div>
 
@@ -508,6 +535,9 @@ const Projectdata = () => {
             id={id ?? ""}
             EditableData={editableData}
             pages={pages}
+            month={month}
+            year={year}
+            search={search}
           />
 
           {/* filters */}
@@ -516,6 +546,8 @@ const Projectdata = () => {
               className={styles.searchBox}
               placeholder="Search tasks..."
               contentBefore={<Search20Regular />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
             <Dropdown
               className={styles.dateFilter}
@@ -614,15 +646,16 @@ const Projectdata = () => {
                       <Dropdown
                         className={styles.statusDropdown}
                         size="small"
-                        value={task.status}
+                        value={task.status??"Todo"}
                         selectedOptions={[task.status]}
-                        onOptionSelect={(_) => {
-                          // UpdateStatus.mutate(task.id);
+                        onOptionSelect={(_,data) => {
+                           UpdateStatus.mutate({id:task.id,status:data.optionValue??"Todo"});
                         }}
                       >
-                        <Option value="pending">Pending</Option>
+                        <Option value="Todo">Todo</Option>
+                        <Option value="Inprogress">Inprogress</Option>
 
-                        <Option value="done">Done</Option>
+                        <Option value="Done">Done</Option>
                       </Dropdown>
                       <Button
                         appearance="subtle"
@@ -655,11 +688,21 @@ const Projectdata = () => {
 
           {/* pagination */}
           <div className={styles.pagination}>
-            <Button className={styles.pageButton} appearance="subtle">
+            <Button
+              className={styles.pageButton}
+              appearance="subtle"
+              disabled={pages < 2}
+              onClick={() => setPages(pages - 1)}
+            >
               Previous
             </Button>
             <p>1</p>
-            <Button className={styles.pageButton} appearance="subtle">
+            <Button
+              className={styles.pageButton}
+              appearance="subtle"
+              disabled={pages >= Math.ceil((data?.taskCount ?? 0) / 5)}
+              onClick={() => setPages(pages + 1)}
+            >
               Next
             </Button>
           </div>
