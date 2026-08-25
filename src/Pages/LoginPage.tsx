@@ -103,7 +103,7 @@ const LoginPage = () => {
   const loginmutation = useMutation({
     mutationFn: (values: LoginPayload) => Login(values),
     onSuccess: (_data) => {
-      navigate("/");
+      navigate("/otp");
       formik.resetForm();
     },
     onError: (_data) => {
@@ -113,8 +113,8 @@ const LoginPage = () => {
   });
 
   return (
-    <div className={styles.card}>
-      <h1 className={styles.Title}>Login</h1>
+    <div  className={styles.card}>
+      <h1  className={styles.Title}>Login</h1>
       <form className={styles.Form} onSubmit={formik.handleSubmit}>
         <div className={styles.InputBox}>
           <Label htmlFor="userName">Email</Label>

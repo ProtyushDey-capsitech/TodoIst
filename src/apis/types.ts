@@ -44,3 +44,8 @@ export interface ProjectData {
   name: string;
   desc: string;
 }
+
+export interface OtpPayload {
+  sessionId: string;
+  otp: string;
+}

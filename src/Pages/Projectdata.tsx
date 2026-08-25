@@ -19,7 +19,7 @@ import {
   Delete20Regular,
 } from "@fluentui/react-icons";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   keepPreviousData,
@@ -428,6 +428,26 @@ const Projectdata = () => {
     placeholderData: keepPreviousData,
   });
 
+useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check if 'Ctrl' (or 'Cmd' on Mac) AND 'b' are pressed together
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+        // Prevent default browser behavior (like opening bookmarks)
+        event.preventDefault(); 
+          
+        // Toggle the modal open/closed
+        setOpen((prev) => !prev);
+      }
+    };
+
+    // Add the listener to the whole window
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []); // Empty array means this runs once when the app loads
 
 
   if (isPending) {

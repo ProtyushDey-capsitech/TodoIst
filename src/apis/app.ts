@@ -5,7 +5,7 @@ import { LoginState } from "../redux/TokenCounterSlice";
 export const api = axios.create({
   baseURL: "https://localhost:5001/api",
   withCredentials: true,
-  timeout: 1000,
+  timeout: 5000,
 });
 
 api.interceptors.request.use(

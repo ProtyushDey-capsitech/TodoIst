@@ -6,6 +6,7 @@ import SignupPage from "./Pages/SignupPage.tsx";
 import ProjectPage from "./Pages/ProjectPage.tsx";
 import DashBoard from "./Pages/DashBoard.tsx";
 import Projectdata from "./Pages/Projectdata.tsx";
+import OtpPage from "./Pages/OtpPage.tsx";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route element={<AnonymusRoute />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/otp" element={<OtpPage/>} />
           <Route path="/signup" element={<SignupPage />} />
         </Route>
         <Route element={<ProtectedRoute />}>
