@@ -1,24 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  Option,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableHeaderCell,
-  TableRow,
-  makeStyles,
-  tokens,
-} from "@fluentui/react-components";
-
-import {
-  ClipboardTextEdit20Regular,
-  DeleteDismiss20Regular,
-  Open20Regular,
-} from "@fluentui/react-icons";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   keepPreviousData,
   useMutation,
@@ -27,138 +7,115 @@ import {
 } from "@tanstack/react-query";
 
 import ProjectForm from "../Components/ProjectForm";
-import { GetAllProject, DeleteProject, UpdatePrjectStatus } from "../apis/ProjectApi";
+import {
+  GetAllProject,
+  DeleteProject,
+  UpdatePrjectStatus,
+} from "../apis/ProjectApi";
 import type { Project, Pagination } from "../apis/types";
 import { useNavigate } from "react-router";
-
-const useStyles = makeStyles({
-  page: {
-    width: "100%",
-    padding: "24px",
-    boxSizing: "border-box",
-
-    "@media (max-width: 600px)": {
-      padding: "16px",
-    },
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "24px",
-    gap: "16px",
-
-    "@media (max-width: 500px)": {
-      alignItems: "flex-start",
-      flexDirection: "column",
-    },
-  },
-  titleBox: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  },
-  title: {
-    margin: 0,
-    fontSize: "28px",
-    fontWeight: "600",
-  },
-  subtitle: {
-    margin: 0,
-    color: tokens.colorNeutralForeground3,
-    fontSize: "14px",
-  },
-  addButton: {
-    minWidth: "120px",
-  },
-  tableContainer: {
-    width: "100%",
-    maxWidth: "100%",
-    overflowX: "auto",
-    overflowY: "hidden",
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    borderRadius: tokens.borderRadiusLarge,
-  },
-  table: {
-    width: "100%",
-    minWidth: "900px",
-    tableLayout: "fixed",
-  },
-  headerCell: {
-    backgroundColor: tokens.colorNeutralBackground3,
-    fontWeight: "600",
-    padding: "12px 16px",
-    whiteSpace: "nowrap",
-  },
-  cell: {
-    padding: "12px 16px",
-    verticalAlign: "middle",
-    overflow: "hidden",
-  },
-  description: {
-    whiteSpace: "normal",
-    overflowWrap: "anywhere",
-    wordBreak: "break-word",
-    display: "-webkit-box",
-    WebkitLineClamp: 1,
-    WebkitBoxOrient: "vertical",
-    overflow: "hidden",
-  },
-  statusDropdown: {
-    width: "90px",
-    minWidth: "90px",
-  },
-  actions: {
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-    whiteSpace: "nowrap",
-  },
-  actionButton: {
-    minWidth: "32px",
-    width: "32px",
-    height: "32px",
-    padding: "4px",
-  },
-  tasks: {
-    textAlign: "center",
-  },
-  empty: {
-    padding: "40px",
-    textAlign: "center",
-    color: tokens.colorNeutralForeground3,
-  },
-  paginationbox:{
-    display:"flex",
-    justifyContent:"center",
-    marginTop:"20px",
-    gap: "10px",
-    alignItems:"center",
-    fontSize:"16px"
-  },
-  paginationbutton:{
-    height:"30px",
-    width:"30px",
-    boxShadow:tokens.shadow2,
-    borderRadius:"5px"
-  }
-});
+import {
+  Col,
+  Row,
+  Button,
+  Table,
+  type TableColumnsType,
+  type TableProps,
+  Space,
+  Flex,
+  Select,
+  Input,
+} from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  LinkOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import UseDebounce from "../hooks/UseDebounce";
 
 const ProjectPage = () => {
-  const styles = useStyles();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
+  
   const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [pages, setPages] = useState<number>(1)
+  const [pages, setPages] = useState<number>(1);
+  const [search, setSearch]= useState<string>("")
+  const [searchStatus, setSearchStatus]= useState<string>("")
   const [editableData, setEditableData] = useState<
-    Omit<Project, "status" | "taskCount">
+  Omit<Project, "status" | "taskCount">
   >({
     id: "",
     name: "",
     desc: "",
   });
+  const debouncedSearch = UseDebounce<string>(search, 500);
+
+  const columns: TableColumnsType<Project> = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      width: "20%",
+      ellipsis: true,
+    },
+    {
+      title: "Description",
+      dataIndex: "desc",
+      width: "45%",
+      ellipsis: true,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      width: "15%",
+      render: (_, record) => {
+        return (
+          <Select
+            value={record.status}
+            style={{ width: 120 }}
+            onChange={() => UpdateStatus.mutate((record.id))}
+            options={[
+              { value: true, label: "Completed" },
+              { value: false, label: "Todo" },
+            ]}
+          />
+        );
+      },
+    },
+    {
+      title: "TaskCount",
+      dataIndex: "taskCount",
+      width: "10%",
+    },
+    {
+      title: "Action",
+      dataIndex: "actions",
+      width: "10%",
+      render: (_, record) => {
+        return (
+          <Space size="small">
+            <Button
+              onClick={() => navigate(`/project/${record.id}`)}
+              icon={<LinkOutlined />}
+            ></Button>
+            <Button
+              onClick={() => ReadyforEdit(record.id, record.name, record.desc)}
+              icon={<EditOutlined />}
+            ></Button>
+            <Button
+              onClick={() => Delete.mutate(record.id)}
+              icon={<DeleteOutlined />}
+            ></Button>
+          </Space>
+        );
+      },
+    },
+  ];
+
+  const onChange: TableProps<Project>["onChange"] = (pagination) => {
+    setPages(pagination.current ?? 1);
+  };
 
   const ReadyforEdit = (id: string, name: string, desc: string) => {
     const project: Omit<Project, "status" | "taskCount"> = {
@@ -171,7 +128,7 @@ const ProjectPage = () => {
     setOpen(true);
     setIsEditing(true);
   };
-  
+
   const Delete = useMutation({
     mutationFn: (id: string) => DeleteProject(id),
     mutationKey: ["ProjectDelete"],
@@ -182,63 +139,105 @@ const ProjectPage = () => {
     },
   });
 
-const UpdateStatus = useMutation({
-  mutationFn: (id: string) => UpdatePrjectStatus(id),
+  const UpdateStatus = useMutation({
+    mutationFn: (id: string) => UpdatePrjectStatus(id),
 
-  mutationKey: ["ProjectStatus"],
+    mutationKey: ["ProjectStatus"],
 
-  onSuccess: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["getProjects"],
       });
     },
-});
-
-  const { data, isLoading } = useQuery<Pagination<Project>>({
-    queryKey: ["getProjects",pages],
-    queryFn: ()=>GetAllProject(pages),
-    placeholderData: keepPreviousData,
   });
 
+  const ClearSearch = ()=>{
+    setSearch("")
+    setSearchStatus("")
+  }
 
-useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Check if 'Ctrl' (or 'Cmd' on Mac) AND 'b' are pressed together
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
-        // Prevent default browser behavior (like opening bookmarks)
-        event.preventDefault(); 
-          
-        // Toggle the modal open/closed
-        setOpen((prev) => !prev);
-      }
-    };
-
-    // Add the listener to the whole window
-    window.addEventListener('keydown', handleKeyDown);
-
-    // Clean up the listener when the component unmounts
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []); // Empty array means this runs once when the app loads
-
+const { data, isLoading } = useQuery<Pagination<Project>>({
+  queryKey: ["getProjects", pages, debouncedSearch, searchStatus],
+  queryFn: () => GetAllProject(pages, debouncedSearch, searchStatus),
+  placeholderData: keepPreviousData,
+});
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.titleBox}>
-          <h1 className={styles.title}>Projects</h1>
-          <p className={styles.subtitle}>Manage your projects and tasks</p>
-        </div>
-
-        <Button
-          className={styles.addButton}
-          appearance="primary"
-          onClick={() => setOpen(true)}
-        >
-          + Add Project
-        </Button>
-      </div>
+    <Flex gap={"medium"} vertical>
+      <Row
+        style={{
+          backgroundColor: "#F5F5F5",
+          width: "100%",
+          height: "45px",
+          borderRadius: "10px",
+          padding: "5px 16px",
+          alignItems: "center",
+        }}
+      >
+        <Col span={23}>
+          <p className="text-[16px] text-blue-500 font-medium">
+            Manage your projects
+          </p>
+        </Col>
+        <Col span={1}>
+          <Button
+            icon={<ReloadOutlined />}
+            shape="circle"
+            onClick={() => window.location.reload()}
+          />
+        </Col>
+      </Row>
+      <Row
+        gutter={20}
+        style={{
+          backgroundColor: "#F5F5F5",
+          width: "100%",
+          height: "60px",
+          borderRadius: "10px",
+          padding: "5px 16px",
+          alignItems: "center",
+          marginInline:"auto"
+        }}
+      >
+        <Col span={8}>
+          <Input placeholder="Search the project" value={search} onChange={(e)=>setSearch(e.target.value)}/>
+        </Col>
+        <Col span={2}>
+          <Select
+            value={searchStatus}
+            style={{ width: "100%" }}
+            onChange={(e) => setSearchStatus(e)}
+            options={[
+              { value: "", label: "All" },
+              { value: "true  ", label: "Completed" },
+              { value: "false", label: "Todo" },
+            ]}
+          />
+        </Col>
+        <Col span={2}>
+          <Button
+            icon={<ReloadOutlined />}
+            shape="circle"
+            onClick={ClearSearch}
+          />
+        </Col>
+      </Row>
+      <Table<Project>
+        columns={columns}
+        loading={isLoading}
+        style={{
+          width: "100%",
+        }}
+        size="medium"
+        dataSource={data?.results}
+        onChange={onChange}
+        pagination={{
+          current: pages,
+          pageSize: data?.pageSize ?? 10,
+          total: data?.total ?? 0,
+          showSizeChanger: false,
+        }}
+      />
 
       <ProjectForm
         modalopen={open}
@@ -249,153 +248,7 @@ useEffect(() => {
         isEditing={isEditing}
         EditableData={editableData}
       />
-
-      {/* project table */}
-      <div className={styles.tableContainer}>
-        <Table aria-label="Projects table" className={styles.table}>
-          <colgroup>
-            <col style={{ width: "15%" }} />
-            <col style={{ width: "20%" }} />
-            <col style={{ width: "40%" }} />
-            <col style={{ width: "10%" }} />
-            <col style={{ width: "15%" }} />
-          </colgroup>
-
-          <TableHeader>
-            <TableRow>
-              <TableHeaderCell className={styles.headerCell}>
-                Status
-              </TableHeaderCell>
-
-              <TableHeaderCell className={styles.headerCell}>
-                Project
-              </TableHeaderCell>
-
-              <TableHeaderCell className={styles.headerCell}>
-                Description
-              </TableHeaderCell>
-
-              <TableHeaderCell className={styles.headerCell}>
-                Tasks
-              </TableHeaderCell>
-
-              <TableHeaderCell className={styles.headerCell}>
-                Actions
-              </TableHeaderCell>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5}>
-                  <div className={styles.empty}>Loading projects...</div>
-                </TableCell>
-              </TableRow>
-            ) : data && data.results.length > 0 ? (
-              data.results.map((item) => (
-                <TableRow key={item.id}>
-                  {/* project status */}
-                  <TableCell className={styles.cell}>
-                    <Dropdown
-                      className={styles.statusDropdown}
-                      size="small"
-                      value={item.status ? "Done" : "Pending"}
-                      selectedOptions={[item.status ? "done" : "pending"]}
-                      onOptionSelect={(_) => {
-                        UpdateStatus.mutate(item.id);
-                      }}
-                    >
-                      <Option value="pending">Pending</Option>
-
-                      <Option value="done">Done</Option>
-                    </Dropdown>
-                  </TableCell>
-
-                  {/* project name */}
-                  <TableCell className={styles.cell}>
-                    <span
-                      className={styles.description}
-                      style={{
-                        textDecoration: item.status ? "line-through" : "none",
-                      }}
-                    >
-                      {item.name}
-                    </span>
-                  </TableCell>
-
-                  {/* project  dcesc*/}
-                  <TableCell className={styles.cell}>
-                    <div
-                      className={styles.description}
-                      style={{
-                        textDecoration: item.status ? "line-through" : "none",
-                      }}
-                    >
-                      {item.desc}
-                    </div>
-                  </TableCell>
-
-                  {/* task count */}
-                  <TableCell className={styles.cell}>
-                    {item.taskCount}
-                  </TableCell>
-
-                  {/* action button */}
-                  <TableCell className={styles.cell}>
-                    <div className={styles.actions}>
-                      <Button
-                        className={styles.actionButton}
-                        appearance="subtle"
-                        icon={<Open20Regular />}
-                        aria-label="View project"
-                        title="View project"
-                        onClick={() =>
-                          navigate(`/project/${item.id}`)
-                        }
-                      />
-
-                      <Button
-                        className={styles.actionButton}
-                        appearance="subtle"
-                        icon={<ClipboardTextEdit20Regular />}
-                        aria-label="Edit project"
-                        title="Edit project"
-                        onClick={() =>
-                          ReadyforEdit(item.id, item.name, item.desc)
-                        }
-                      />
-
-                      <Button
-                        className={styles.actionButton}
-                        appearance="subtle"
-                        icon={<DeleteDismiss20Regular />}
-                        aria-label="Delete project"
-                        title="Delete project"
-                        onClick={() => Delete.mutate(item.id)}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5}>
-                  <div className={styles.empty}>No projects found.</div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* pagination button */}
-      <div className={styles.paginationbox}>
-        <button disabled={pages<2} onClick={()=>setPages(pages-1)} className={styles.paginationbutton}>P</button>
-        <p>{pages}</p>
-        <button disabled={pages >= Math.ceil((data?.total ?? 0) / 10)} onClick={()=>setPages(pages+1)} className={styles.paginationbutton}>N</button>
-        </div>
-    </div>
+    </Flex>
   );
 };
 

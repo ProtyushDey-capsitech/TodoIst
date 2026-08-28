@@ -1,107 +1,92 @@
-import * as React from "react";
-import type { JSXElement } from "@fluentui/react-components";
-import {
-  AppItem,
-  Hamburger,
-  NavDrawer,
-  NavDrawerBody,
-  NavDrawerHeader,
-  NavItem,
-  Button,
-  makeStyles,
-  tokens,
-} from "@fluentui/react-components";
-import {
-  Board20Regular,
-  CheckmarkCircle20Regular,
-  Dismiss20Regular,
-  PersonCircle32Regular,
-  SignOut20Regular,
-} from "@fluentui/react-icons";
-import { useNavigate } from "react-router";
+import Sider from "antd/es/layout/Sider";
+import { Button, ConfigProvider, Menu } from "antd";
+import { DatabaseOutlined, CheckSquareOutlined } from "@ant-design/icons";
 import { LogoutUser } from "../apis/AuthApi";
+import { useLocation, useNavigate } from "react-router";
+import React from "react";
 
-const useStyles = makeStyles({
-  nav: {
-    minWidth: "240px",
-  },
-
-  content: {
-    flex: 1,
-    padding: "20px",
-  },
-
-  logout: {
-    marginTop: "auto",
-    width: "100%",
-  },
-  button: {
-    height: "50px",
-  },
-  navbar: {
-    width: "100%",
-    padding: "20px",
-    backgroundColor: "#fffef5",
-    boxShadow:tokens.shadow2,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  heading: {
-    fontSize: "36px",
-    fontFamily:"cursive"
-
-  },
-});
-
-export const Navbar = (): JSXElement => {
-  const styles = useStyles();
-
-  const [isOpen, setIsOpen] = React.useState(false);
+export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const items = [
+    { label: "Projects", icon: DatabaseOutlined },
+    { label: "Tasks", icon: CheckSquareOutlined },
+  ].map((navitems) => ({
+    key: `/${navitems.label}`,
+    icon: React.createElement(navitems.icon),
+    label: `${navitems.label}`,
+     style: {
+    marginBottom: 5,
+  },
+  }));
+
   return (
-    <>
-      <NavDrawer
-        open={isOpen}
-        type={"overlay"}
-        className={styles.nav}
-        defaultSelectedValue="projects"
-      >
-        <NavDrawerBody>
-          <NavDrawerHeader>
-            <Button
-              appearance="subtle"
-              icon={<Dismiss20Regular />}
-              onClick={() => setIsOpen(false)}
-            />
-          </NavDrawerHeader>
-          <AppItem icon={<PersonCircle32Regular />}>Task Manager</AppItem>
-
-          <NavItem icon={<Board20Regular />} value="projects">
-            Projects
-          </NavItem>
-
-          <NavItem icon={<CheckmarkCircle20Regular />} value="tasks">
-            Tasks
-          </NavItem>
-
-          <Button
-            appearance="subtle"
-            icon={<SignOut20Regular />}
-            className={styles.logout}
-            onClick={()=>{
-              navigate("/login")
-              LogoutUser()
+    <Sider
+      breakpoint="lg"
+      collapsedWidth="0"
+      onBreakpoint={(broken) => {
+        console.log(broken);
+      }}
+      onCollapse={(collapsed, type) => {
+        console.log(collapsed, type);
+      }}
+      width={260}
+      style={{
+        height: "100vh",
+        backgroundColor: "#F5F5F5",
+        padding: "10px",
+        paddingBlock: "20px",
+        boxShadow:"rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px"
+      }}
+      styles={{
+        body: {
+          display: "flex",
+          flexDirection: "column",
+          gap: "100px",
+          justifyContent: "space-between",
+        },
+      }}
+    >
+      <div className=" flex flex-col gap-5">
+        <h1 className="text-3xl font-medium mx-auto">TaskManager</h1>
+        <ConfigProvider
+          theme={{
+            components: {
+              Menu: {
+                itemSelectedBg: "#E8EDF2",
+                itemSelectedColor: "#1677ff",
+                itemHoverBg: "#f5f5f5",
+                itemHoverColor: "#1677ff",
+                itemBorderRadius:8,
+                itemHeight: 35,
+              },
+            },
+          }}
+        >
+          <Menu
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            items={items}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontWeight: 600,
+              fontSize: 16,
             }}
-          >
-            Logout
-          </Button>
-        </NavDrawerBody>
-      </NavDrawer>
-      <div className={styles.navbar}>
-        <p className={styles.heading}>Task Manager</p>
-        <Hamburger onClick={() => setIsOpen(true)} className={styles.button} />
+            onClick={(e)=>navigate(e.key)}
+          />
+        </ConfigProvider>
       </div>
-    </>
+      <Button
+        type="primary"
+        onClick={() => {
+          navigate("/login");
+          LogoutUser();
+        }}
+      >
+        Logout
+      </Button>
+    </Sider>
   );
 };

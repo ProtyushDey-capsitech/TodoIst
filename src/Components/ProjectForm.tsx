@@ -1,23 +1,10 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogBody,
-  DialogContent,
-  DialogSurface,
-  DialogTitle,
-  Input,
-  Label,
-  makeStyles,
-  MessageBar,
-  MessageBarBody,
-  Textarea,
-} from "@fluentui/react-components";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import type { Project } from "../apis/types";
 import { CreateProject, EditProject } from "../apis/ProjectApi";
+import { Form, Input, Modal } from "antd";
+import TextArea from "antd/es/input/TextArea";
 
 interface props {
   modalopen: boolean;
@@ -26,38 +13,12 @@ interface props {
   EditableData: Omit<Project, "status" | "taskCount">;
 }
 
-const useStyle = makeStyles({
-  Form: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-    gap: "20px",
-    marginBlock: "20px",
-  },
-  InputBox: {
-    width: "100%",
-    display: "flex",
-    gap: "5px",
-    flexDirection: "column",
-  },
-  Input: {
-    width: "100%",
-    padding: "8px 12px",
-  },
-  Textarea: {
-    width: "100%",
-    padding: "8px 12px",
-    height: "200px",
-  },
-});
-
 const ProjectForm = ({
   modalopen,
   modaldisplay,
   isEditing,
   EditableData,
 }: props) => {
-  const styles = useStyle();
   const queryClient = useQueryClient();
 
   const inputError = Yup.object().shape({
@@ -103,7 +64,7 @@ const ProjectForm = ({
 
   const projectEdit = useMutation({
     mutationFn: (values: Omit<Project, "id" | "status" | "taskCount">) =>
-      EditProject(values, EditableData.id),
+      EditProject(values, "EditableData.id"),
 
     mutationKey: ["ProjectEdit"],
 
@@ -114,71 +75,71 @@ const ProjectForm = ({
     },
   });
 
+  const handleClose = () => {
+    formik.resetForm();
+    modaldisplay();
+  };
+
   return (
-    <Dialog
+    <Modal
       open={modalopen}
-      onOpenChange={() => {
-        formik.resetForm();
-        modaldisplay();
+      title={isEditing?"Edit project":"Add project"}
+       okText={"save"}
+      onOk={() => formik.handleSubmit()}
+      onCancel={handleClose}
+      styles={{
+        title: {
+          fontSize: 24,
+        },
       }}
     >
-      <DialogSurface>
-        <form onSubmit={formik.handleSubmit}>
-          <DialogBody>
-            <DialogTitle>Add Project</DialogTitle>
-
-            <DialogContent className={styles.Form}>
-              <div className={styles.InputBox}>
-                <Label htmlFor="name">Project Name</Label>
-
-                <Input
-                  id="name"
-                  type="text"
-                  name="name"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  placeholder="Project name"
-                  value={formik.values.name}
-                  className={styles.Input}
-                />
-
-                {formik.touched.name && formik.errors.name && (
-                  <MessageBar intent="error">
-                    <MessageBarBody>{formik.errors.name}</MessageBarBody>
-                  </MessageBar>
-                )}
-              </div>
-
-              <div className={styles.InputBox}>
-                <Label htmlFor="desc">Description</Label>
-
-                <Textarea
-                  id="desc"
-                  name="desc"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  placeholder="Description"
-                  value={formik.values.desc}
-                  className={styles.Textarea}
-                />
-
-                {formik.touched.desc && formik.errors.desc && (
-                  <MessageBar intent="error">
-                    <MessageBarBody>{formik.errors.desc}</MessageBarBody>
-                  </MessageBar>
-                )}
-              </div>
-            </DialogContent>
-
-            <DialogActions>
-              <Button appearance="primary" type="submit">
-                {isEditing ? "Edit project" : "Create Project"}
-              </Button>
-            </DialogActions>
-          </DialogBody>
-        </form>
-      </DialogSurface>
-    </Dialog>
+      <Form
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 24 }}
+        layout="vertical"
+        style={{ maxWidth: 600 }}
+      >
+        <Form.Item
+          label="Name"
+          validateStatus={
+            formik.touched.name && formik.errors.name ? "error" : ""
+          }
+          help={
+            formik.touched.name && formik.errors.name ? formik.errors.name : ""
+          }
+        >
+          {" "}
+          <Input
+            name="name"
+            placeholder="Enter project name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />{" "}
+        </Form.Item>
+        <Form.Item
+          label="Description"
+          validateStatus={
+            formik.touched.desc && formik.errors.desc ? "error" : ""
+          }
+          help={
+            formik.touched.desc && formik.errors.desc ? formik.errors.desc : ""
+          }
+        >
+          <TextArea
+            rows={9}
+            name="desc"
+            placeholder="Enter project description"
+            value={formik.values.desc}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            style={{
+              resize: "none",
+            }}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

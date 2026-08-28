@@ -6,6 +6,7 @@ import type { LoginPayload, OtpPayload, SignupPayload } from "./types";
 export const Login = async (loginData: LoginPayload) => {
   try {
     const { data } = await api.post("Auth/Login", loginData);
+    if(!data.status) throw new Error(data.message || "Login failed");
     sessionStorage.setItem("otpSessionId", data.result);
     return data;
   } catch (error) {

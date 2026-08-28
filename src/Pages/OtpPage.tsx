@@ -1,12 +1,3 @@
-import {
-  Button,
-  Input,
-  Label,
-  makeStyles,
-  MessageBar,
-  MessageBarBody,
-  tokens,
-} from "@fluentui/react-components";
 import { useNavigate } from "react-router";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
@@ -14,91 +5,11 @@ import * as Yup from "yup";
 import { useState } from "react";
 import { VerifyOtp } from "../apis/AuthApi";
 import type { OtpPayload } from "../apis/types";
-
-const useStyle = makeStyles({
-  card: {
-    backgroundColor: "#fefbf4",
-    boxShadow: tokens.shadow4,
-    minWidth: "300px",
-    maxWidth: "450px",
-    height: "500px",
-    marginInline: "auto",
-    marginTop: "200px",
-    borderRadius: "15px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    gap: "40px",
-    alignItems: "center",
-    padding: "5px",
-
-    "@media (max-width: 450px)": {
-      margin: "0px",
-      width: "100%",
-      height: "100vh",
-      boxShadow: "none",
-    },
-  },
-
-  Title: {
-    fontWeight: "600",
-    fontSize: "32px",
-  },
-
-  Description: {
-    width: "90%",
-    textAlign: "center",
-    marginTop: "-20px",
-  },
-
-  Form: {
-    display: "flex",
-    flexDirection: "column",
-    width: "90%",
-    gap: "20px",
-  },
-
-  InputBox: {
-    width: "100%",
-    display: "flex",
-    gap: "5px",
-    flexDirection: "column",
-  },
-
-  Input: {
-    width: "100%",
-    padding: "8px 12px",
-  },
-
-  Button: {
-    width: "100%",
-    padding: "8px 12px",
-    color: "#fff",
-    backgroundColor: "#7160e8",
-
-    ":hover": {
-      backgroundColor: "#5c2e91",
-      color: "#fff",
-    },
-  },
-
-  Resend: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#7160e8",
-    cursor: "pointer",
-
-    ":hover": {
-      color: "#5c2e91",
-    },
-  },
-});
-
-
+import { Button, Form, Input, Typography, Alert } from "antd";
 
 const OtpPage = () => {
-  const styles = useStyle();
   const navigate = useNavigate();
+  const { Title} = Typography;
 
   const [otpError, setOtpError] = useState(false);
 
@@ -142,71 +53,97 @@ const OtpPage = () => {
   });
 
   return (
-    <div className={styles.card}>
-      <h1 className={styles.Title}>Verify OTP</h1>
+    <div
+      className="
+        bg-[#F5F5F5]
+        shadow-lg
+        rounded-[15px]
+        min-w-75
+        max-w-112.5
+        h-80
+        mx-auto
+        mt-50
+        flex
+        flex-col
+        justify-center
+        items-center
+        gap-5
+        p-1.25
+        max-[450px]:w-full
+        max-[450px]:h-screen
+        max-[450px]:mt-0
+        max-[450px]:rounded-none
+        max-[450px]:shadow-none
+      "
+    >
+      <Title level={2} style={{ margin: 0, fontWeight: 600 }}>
+        Verify otp
+      </Title>
 
-      <p className={styles.Description}>
-        Enter the 6-digit OTP sent to your email address.
-      </p>
-
-      <form className={styles.Form} onSubmit={formik.handleSubmit}>
-        <div className={styles.InputBox}>
-          <Label htmlFor="otp">OTP</Label>
-
-          <Input
-            id="otp"
-            type="text"
-            name="otp"
-            maxLength={6}
-            inputMode="numeric"
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "");
-
-              formik.setFieldValue("otp", value);
-              setOtpError(false);
-            }}
-            onBlur={formik.handleBlur}
-            placeholder="Enter 6 digit OTP"
+      <Form
+        name="basic"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 24 }}
+        layout="vertical"
+        style={{ minWidth: "90%" }}
+        initialValues={{ remember: true }}
+        onFinish={formik.handleSubmit}
+        autoComplete="off"
+        styles={{root:{display:"flex", flexDirection:"column", gap:20}}}
+      >
+        <Form.Item<string>
+          label="OTP"
+          name="otp"
+          validateStatus={
+            formik.touched.otp && formik.errors.otp ? "error" : ""
+          }
+          help={
+            formik.touched.otp && formik.errors.otp
+              ? formik.errors.otp
+              : ""
+          }
+        >
+          <Input.OTP
+            length={6}
+            size="large"
             value={formik.values.otp}
-            className={styles.Input}
+            onChange={(value) => {
+              formik.setFieldValue("otp", value);
+            }}
+            onBlur={() => {
+              formik.setFieldTouched("otp", true);
+            }}
           />
-
-          {formik.touched.otp && formik.errors.otp && (
-            <MessageBar intent="error">
-              <MessageBarBody>{formik.errors.otp}</MessageBarBody>
-            </MessageBar>
-          )}
-        </div>
+        </Form.Item>
 
         {otpError && (
-          <MessageBar intent="error">
-            <MessageBarBody>
-              Invalid or expired OTP
-            </MessageBarBody>
-          </MessageBar>
+          <Alert
+            type="error"
+            message="Invalid OTP"
+            showIcon
+            className="mb-4"
+          />
         )}
 
         <Button
-          className={styles.Button}
-          type="submit"
-          disabled={otpMutation.isPending}
+          type="primary"
+          htmlType="submit"
+          style={{ width: "100%" }}
+          loading={otpMutation.isPending}
         >
-          {otpMutation.isPending ? "Verifying..." : "Verify OTP"}
+          Verify otp
         </Button>
-      </form>
+      </Form>
 
-      <p>
-        Didn't receive the OTP?{" "}
+      {/* <Text>
+        You don't have an account, please{" "}
         <span
-          className={styles.Resend}
-          onClick={() => {
-            // Add resend OTP API here
-            console.log("Resend OTP");
-          }}
+          className="font-bold text-[#7160e8] cursor-pointer hover:text-[#5c2e91]"
+          onClick={() => navigate("/signup")}
         >
-          Resend
+          Signup
         </span>
-      </p>
+      </Text> */}
     </div>
   );
 };

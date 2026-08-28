@@ -1,12 +1,3 @@
-import {
-  Button,
-  Input,
-  Label,
-  makeStyles,
-  MessageBar,
-  MessageBarBody,
-  tokens,
-} from "@fluentui/react-components";
 import { Signup } from "../apis/AuthApi";
 import { useNavigate } from "react-router";
 import { useFormik } from "formik";
@@ -14,91 +5,10 @@ import { useMutation } from "@tanstack/react-query";
 import type { SignupPayload } from "../apis/types";
 import * as Yup from "yup";
 import { useState } from "react";
+import { Alert, Button, Form, Input, Typography } from "antd";
 
-const useStyle = makeStyles({
-  card: {
-    backgroundColor: "#fefbf4",
-    boxShadow: tokens.shadow4,
-    minWidth: "300px",
-    maxWidth: "450px",
-    height: "600px",
-    marginInline: "auto",
-    marginTop: "150px",
-    borderRadius: "15px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    gap: "40px",
-    alignItems: "center",
-    padding: "5px",
-    "@media (max-width: 450px)": {
-      margin: "0px",
-      width: "100%",
-      height: "100vh",
-      boxShadow: "none",
-    },
-  },
-  Title: {
-    fontWeight: "600",
-    fontSize: "32px",
-  },
-  Form: {
-    display: "flex",
-    flexDirection: "column",
-    width: "90%",
-    gap: "20px",
-  },
-  InputBox: {
-    width: "100%",
-    display: "flex",
-    gap: "5px",
-    flexDirection: "column",
-  },
-  NameBox: {
-    width: "100%",
-    display: "flex",
-    gap: "5px",
-    justifyContent: "center",
-    "@media (max-width: 450px)": {
-      flexDirection: "column",
-    },
-  },
-  NameInputBox: {
-    width: "50%",
-    display: "flex",
-    gap: "5px",
-    flexDirection: "column",
-    "@media (max-width: 450px)": {
-      width: "100%",
-    },
-  },
-  Input: {
-    width: "100%",
-    padding: "8px 12px",
-  },
-  Button: {
-    width: "100%",
-    padding: "8px 12px",
-    color: "#fff",
-    backgroundColor: "#7160e8",
-    ":hover": {
-      backgroundColor: "#5c2e91",
-      color: "#fff",
-    },
-  },
-  Signin: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#7160e8",
-    cursor: "pointer",
-    ":hover": {
-      color: "#5c2e91",
-    },
-  },
-});
-
+const { Title, Text } = Typography;
 const SignupPage = () => {
-  const styles = useStyle();
   const navigate = useNavigate();
   const [accountExists, setAccountExists] = useState<boolean>(false);
   const inputError = Yup.object({
@@ -140,93 +50,154 @@ const SignupPage = () => {
   });
 
   return (
-    <div className={styles.card}>
-      <h1 className={styles.Title}>SignUp</h1>
-      <form className={styles.Form} onSubmit={formik.handleSubmit}>
-        <div className={styles.NameBox}>
-          <div className={styles.NameInputBox}>
-            <Label htmlFor="first">First name</Label>
-            <Input
-              id="first"
-              type="text"
-              name="name.first"
-              onChange={formik.handleChange}
-              placeholder="First name"
-              value={formik.values.name.first}
-              className={styles.Input}
-            ></Input>
-            {formik.touched.name?.first && formik.errors.name?.first && (
-              <MessageBar intent="error">
-                <MessageBarBody>{formik.errors.name.first}</MessageBarBody>
-              </MessageBar>
-            )}
-          </div>
-          <div className={styles.NameInputBox}>
-            <Label htmlFor="last">Last name</Label>
-            <Input
-              id="last"
-              type="text"
-              name="name.last"
-              onChange={formik.handleChange}
-              placeholder="Last name"
-              value={formik.values.name.last}
-              className={styles.Input}
-            ></Input>
-            {formik.touched.name?.last && formik.errors.name?.last && (
-              <MessageBar intent="error">
-                <MessageBarBody>{formik.errors.name.last}</MessageBarBody>
-              </MessageBar>
-            )}
-          </div>
-        </div>
-        <div className={styles.InputBox}>
-          <Label htmlFor="phoneNumber">Phone number</Label>
+    <div
+      className="
+        bg-[#F5F5F5]
+        shadow-lg
+        rounded-[15px]
+        min-w-75
+        max-w-112.5
+        h-135
+        mx-auto
+        mt-50
+        flex
+        flex-col
+        justify-center
+        items-center
+        gap-10
+        p-1.25
+        max-[450px]:w-full
+        max-[450px]:h-screen
+        max-[450px]:mt-0
+        max-[450px]:rounded-none
+        max-[450px]:shadow-none
+      "
+    >
+      <Title level={2} style={{ margin: 0, fontWeight: 600 }}>
+        Sign Up
+      </Title>
+
+      <Form
+        name="basic"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 24 }}
+        layout="vertical"
+        style={{ minWidth: "90%" }}
+        initialValues={{ remember: true }}
+        onFinish={formik.handleSubmit}
+        autoComplete="off"
+      >
+        <Form.Item<string>
+          label="FirstName"
+          name="name.first"
+          validateStatus={
+            formik.touched.name?.first && formik.errors.name?.first
+              ? "error"
+              : ""
+          }
+          help={
+            formik.touched.name?.first && formik.errors.name?.first
+              ? formik.errors.name.first
+              : ""
+          }
+        >
           <Input
-            type="text"
-            name="phoneNumber"
+            name="name.first"
+            placeholder="Enter first name"
+            value={formik.values.name.first}
             onChange={formik.handleChange}
-            placeholder="Enter the phone number"
-            value={formik.values.phoneNumber}
-            className={styles.Input}
+            onBlur={formik.handleBlur}
           />
-          {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-            <MessageBar intent="error">
-              <MessageBarBody>{formik.errors.phoneNumber}</MessageBarBody>
-            </MessageBar>
-          )}
-        </div>
-        <div className={styles.InputBox}>
-          <Label htmlFor="Email">Email</Label>
+        </Form.Item>
+
+        <Form.Item<string>
+          label="LastName"
+          name="name.last"
+          validateStatus={
+            formik.touched.name?.last && formik.errors.name?.last ? "error" : ""
+          }
+          help={
+            formik.touched.name?.last && formik.errors.name?.last
+              ? formik.errors.name.last
+              : ""
+          }
+        >
           <Input
-            id="Email"
-            type="email"
+            name="name.last"
+            placeholder="Enter last name"
+            value={formik.values.name.last}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+        </Form.Item>
+
+        <Form.Item<string>
+          label="Email"
+          name="userName"
+          validateStatus={
+            formik.touched.email && formik.errors.email ? "error" : ""
+          }
+          help={
+            formik.touched.email && formik.errors.email
+              ? formik.errors.email
+              : ""
+          }
+        >
+          <Input
             name="email"
-            onChange={formik.handleChange}
-            placeholder="Enter the email"
+            placeholder="Enter email"
             value={formik.values.email}
-            className={styles.Input}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
           />
-          {formik.touched.email && formik.errors.email && (
-            <MessageBar intent="error">
-              <MessageBarBody>{formik.errors.email}</MessageBarBody>
-            </MessageBar>
-          )}
-        </div>
-        <Button className={styles.Button} type="submit">
-          SignUp
+        </Form.Item>
+
+        <Form.Item<string>
+          label="Phone number"
+          name="phoneNumber"
+          validateStatus={
+            formik.touched.phoneNumber && formik.errors.phoneNumber
+              ? "error"
+              : ""
+          }
+          help={
+            formik.touched.phoneNumber && formik.errors.phoneNumber
+              ? formik.errors.phoneNumber
+              : ""
+          }
+        >
+          <Input
+            name="phoneNumber"
+            placeholder="Enter PhoneNumber"
+            value={formik.values.phoneNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+        </Form.Item>
+
+        <Button
+          type="primary"
+          htmlType="submit"
+          style={{ width: "100%" }}
+          loading={signupmutation.isPending}
+        >
+          Sign Up
         </Button>
-      </form>
+      </Form>
+
       {accountExists && (
-        <MessageBar intent="error">
-          <MessageBarBody>{signupmutation.data?.message}</MessageBarBody>
-        </MessageBar>
+        <Alert type="error" message={signupmutation.data?.message} showIcon />
       )}
-      <p>
+
+      <Text>
         You have an account, please{" "}
-        <span className={styles.Signin} onClick={() => navigate("/login")}>
+        <span
+          className="font-bold text-[#0077ff] cursor-pointer hover:text-[#0166da]"
+          onClick={() => navigate(-1)}
+        >
           Login
         </span>
-      </p>
+      </Text>
     </div>
   );
 };

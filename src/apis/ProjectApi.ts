@@ -6,8 +6,8 @@ export const CreateProject = async (PostData: Omit<Project,"id"| "status" |"task
   return res.data
 };
 
-export const GetAllProject = async (pages:number) => {
-  const res = await api.get("/Project/GetAllProject",{params:{Page:pages}});
+export const GetAllProject = async (pages:number, name:string, status:string) => {
+  const res = await api.get("/Project/GetAllProject",{params:{Page:pages,Search:name,Status:status}});
   return res.data.result
 };
 

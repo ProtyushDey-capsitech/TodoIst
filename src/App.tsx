@@ -11,8 +11,6 @@ import OtpPage from "./Pages/OtpPage.tsx";
 function App() {
   return (
     <>
-      {/* <LoginPage/> */}
-      {/* <SignupPage/> */}
       <Routes>
         <Route element={<AnonymusRoute />}>
           <Route path="/login" element={<LoginPage />} />
@@ -21,7 +19,7 @@ function App() {
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashBoard />}>
-            <Route path="/" element={<ProjectPage />} />
+            <Route path="/Projects" element={<ProjectPage />} />
           </Route>
           <Route path="project/:id" element={<Projectdata/>}/>
         </Route>
