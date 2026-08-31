@@ -11,11 +11,15 @@ export const GetAllProject = async (pages:number, name:string, status:string) =>
   return res.data.result
 };
 
-export const getProjectById = async (id:string, month:number, year:number, page:number, search:string) => {
-  const res = await api.get("/Project/GetProjectById",{params:{projectId:id, Month:month, Year:year, Search:search, Page:page}});
+export const GetAllProjectName = async () => {
+  const res = await api.get("/Project/GetAllProjectName");
   return res.data.result
 };
 
+export const GetProjectById = async (id:string, month:number, year:number, page:number, search:string) => {
+  const res = await api.get("/Project/GetProjectById",{params:{projectId:id, Month:month, Year:year, Search:search, Page:page}});
+  return res.data.result
+};
 
 export const EditProject = async (PostData: Omit<Project,"id"| "status" | "taskCount">,id:string) => {
   const res = await api.patch("/Project/UpdateProject",PostData,{params:{projectId:id}});

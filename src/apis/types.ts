@@ -36,12 +36,24 @@ export interface Pagination<T> {
   pageSize: number;
 }
 
-export interface ProjectData {
-  tasks: Task[];
+export interface taskproject extends Task{
+  projectName: string
+  projectId: string,
+}
+export interface getalltask{
+    status: string,
+    tasks:taskproject[]
+}
+
+export interface ProjectDataName {
   id: string;
+  name: string;
+}
+
+export interface ProjectData extends ProjectDataName {
+  tasks: Task[];
   taskCount: number;
   status: boolean;
-  name: string;
   desc: string;
 }
 

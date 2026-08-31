@@ -11,6 +11,7 @@ const { Title, Text } = Typography;
 const SignupPage = () => {
   const navigate = useNavigate();
   const [accountExists, setAccountExists] = useState<boolean>(false);
+  
   const inputError = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
     phoneNumber: Yup.string().required("Phone number is required"),

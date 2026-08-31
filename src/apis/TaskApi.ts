@@ -6,6 +6,11 @@ export const createTask = async (postData:Omit<Task,"id"|"status"|"createdAt"> ,
   return res.data
 };
 
+export const GetAllTask = async (search:string, searchproject: string[]) => {
+  const res = await api.post("/Task/getList", { projectIds:searchproject},{params:{name:search}});
+  return res.data.result
+};
+
 export const UpdateTaskStatus = async (taskid:string, status:string) => {
   const res = await api.patch("/Task/UpdateStatus",{},{params:{id:taskid,status:status}});
   return res.data

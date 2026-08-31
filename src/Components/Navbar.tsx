@@ -1,6 +1,6 @@
 import Sider from "antd/es/layout/Sider";
 import { Button, ConfigProvider, Menu } from "antd";
-import { DatabaseOutlined, CheckSquareOutlined } from "@ant-design/icons";
+import { DatabaseOutlined, CheckSquareOutlined, AppstoreOutlined } from "@ant-design/icons";
 import { LogoutUser } from "../apis/AuthApi";
 import { useLocation, useNavigate } from "react-router";
 import React from "react";
@@ -10,10 +10,11 @@ export const Navbar = () => {
   const location = useLocation();
 
   const items = [
+    { label: "Dashboard", icon: AppstoreOutlined },
     { label: "Projects", icon: DatabaseOutlined },
     { label: "Tasks", icon: CheckSquareOutlined },
   ].map((navitems) => ({
-    key: `/${navitems.label}`,
+    key: `/${navitems.label=="Dashboard"?"":navitems.label}`,
     icon: React.createElement(navitems.icon),
     label: `${navitems.label}`,
      style: {
@@ -23,8 +24,8 @@ export const Navbar = () => {
 
   return (
     <Sider
-      breakpoint="lg"
-      collapsedWidth="0"
+      // breakpoint="lg"
+      // collapsedWidth="0"
       onBreakpoint={(broken) => {
         console.log(broken);
       }}

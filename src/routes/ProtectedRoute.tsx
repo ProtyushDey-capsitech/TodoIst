@@ -1,8 +1,6 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { Navigate, Outlet } from "react-router";
-import { Navbar } from "../Components/Navbar";
-
 
 const ProtectedRoute = () => {
 

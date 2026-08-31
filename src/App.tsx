@@ -7,7 +7,8 @@ import ProjectPage from "./Pages/ProjectPage.tsx";
 import DashBoard from "./Pages/DashBoard.tsx";
 import Projectdata from "./Pages/Projectdata.tsx";
 import OtpPage from "./Pages/OtpPage.tsx";
-
+import DashBoardPages from "./routes/DashBoardPages.tsx";
+import TaskPage from "./Pages/TaskPage.tsx";
 function App() {
   return (
     <>
@@ -18,8 +19,10 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
         </Route>
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<DashBoard />}>
+          <Route path="/" element={<DashBoardPages />}>
+            <Route path="/" element={<DashBoard />} />
             <Route path="/Projects" element={<ProjectPage />} />
+            <Route path="/Tasks" element={<TaskPage/>} />
           </Route>
           <Route path="project/:id" element={<Projectdata/>}/>
         </Route>

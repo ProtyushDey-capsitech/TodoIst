@@ -209,7 +209,7 @@ const { data, isLoading } = useQuery<Pagination<Project>>({
             onChange={(e) => setSearchStatus(e)}
             options={[
               { value: "", label: "All" },
-              { value: "true  ", label: "Completed" },
+              { value: "true", label: "Completed" },
               { value: "false", label: "Todo" },
             ]}
           />

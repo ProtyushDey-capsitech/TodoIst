@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
     <FluentProvider theme={webLightTheme}>
       <QueryClientProvider client={queryClient}>
       <App />
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </FluentProvider>
   </BrowserRouter>

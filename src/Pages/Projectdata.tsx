@@ -28,7 +28,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { getProjectById } from "../apis/ProjectApi.ts";
+import { GetProjectById } from "../apis/ProjectApi.ts";
 import TaskForm from "../Components/TaskForm.tsx";
 import type { ProjectData, Task } from "../apis/types.ts";
 import { DeleteTask, UpdateTaskStatus } from "../apis/TaskApi.ts";
@@ -423,31 +423,23 @@ const Projectdata = () => {
 
   const { data, isPending, isError } = useQuery({
     queryKey: ["getProjectTask", pages, month, year, search],
-    queryFn: () => getProjectById(id!, month, year, pages, search),
+    queryFn: () => GetProjectById(id!, month, year, pages, search),
     enabled: !!id,
     placeholderData: keepPreviousData,
   });
 
 useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Check if 'Ctrl' (or 'Cmd' on Mac) AND 'b' are pressed together
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
-        // Prevent default browser behavior (like opening bookmarks)
         event.preventDefault(); 
-          
-        // Toggle the modal open/closed
         setOpen((prev) => !prev);
       }
     };
-
-    // Add the listener to the whole window
     window.addEventListener('keydown', handleKeyDown);
-
-    // Clean up the listener when the component unmounts
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []); // Empty array means this runs once when the app loads
+  }, []);
 
 
   if (isPending) {
