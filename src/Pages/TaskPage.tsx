@@ -5,9 +5,7 @@ import {
   Col,
   Collapse,
   Flex,
-  Input,
   Row,
-  Select,
   type CollapseProps,
 } from "antd";
 import type { getalltask, taskproject } from "../apis/types";
@@ -28,7 +26,7 @@ const TaskPage = () => {
   const items: CollapseProps["items"] = data?.map((x: getalltask) => {
     return {
       key: x.status,
-      label: x.status,
+      label: <Flex gap={10}><p>{x.status}</p> <p>{x.count}</p> </Flex>,
       children: x.tasks.map((x: taskproject) => <p key={x.id}>{x.name} {"  "} {x.projectName}</p>),
     };
   });

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Button, Layout, Modal } from "antd";
+import { useEffect, useState } from "react";
+import { Button, Layout} from "antd";
 import { Navbar } from "../Components/Navbar";
 import { Outlet, useLocation } from "react-router";
 import ProjectForm from "../Components/ProjectForm";

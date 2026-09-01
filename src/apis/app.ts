@@ -24,7 +24,7 @@ api.interceptors.response.use(
     };
     if (error.status == 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
-      try {
+
         const res = await RefreshAccessToken();
         if (res.status) {
           const token: string = res.result.token;
@@ -33,9 +33,7 @@ api.interceptors.response.use(
         } else {
           await LogoutUser();
         }
-      } catch (err) {
-        await LogoutUser();
-      }
+      
     }
   },
 );

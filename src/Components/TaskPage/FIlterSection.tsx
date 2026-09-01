@@ -44,6 +44,8 @@ export const FIlterSection = ({
           value={searchproject}
           mode="multiple"
           allowClear
+          showSearch
+          optionFilterProp="label"
           style={{ width: "100%" }}
           onChange={(e) => setSearchProject(e)}
           maxTagCount={1}

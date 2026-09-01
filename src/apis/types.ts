@@ -1,3 +1,4 @@
+
 export interface Task {
   id: string;
   name: string;
@@ -43,6 +44,7 @@ export interface taskproject extends Task{
 export interface getalltask{
     status: string,
     tasks:taskproject[]
+    count:number
 }
 
 export interface ProjectDataName {
@@ -60,4 +62,11 @@ export interface ProjectData extends ProjectDataName {
 export interface OtpPayload {
   sessionId: string;
   otp: string;
+}
+
+export interface DashCardcount{
+  inprogressTask: number;
+  todoTask: number;
+  totalProject: number;
+  totalTask: number;
 }

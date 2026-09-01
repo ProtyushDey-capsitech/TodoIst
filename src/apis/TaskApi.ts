@@ -11,6 +11,11 @@ export const GetAllTask = async (search:string, searchproject: string[]) => {
   return res.data.result
 };
 
+export const GetCount = async ()=>{
+  const res = await api.get("/Task/CountTask");
+  return res.data.result
+}
+
 export const UpdateTaskStatus = async (taskid:string, status:string) => {
   const res = await api.patch("/Task/UpdateStatus",{},{params:{id:taskid,status:status}});
   return res.data
