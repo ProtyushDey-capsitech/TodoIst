@@ -64,7 +64,7 @@ const ProjectForm = ({
 
   const projectEdit = useMutation({
     mutationFn: (values: Omit<Project, "id" | "status" | "taskCount">) =>
-      EditProject(values, "EditableData.id"),
+      EditProject(values, EditableData.id),
 
     mutationKey: ["ProjectEdit"],
 

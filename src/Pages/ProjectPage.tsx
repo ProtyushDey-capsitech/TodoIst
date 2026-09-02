@@ -25,6 +25,8 @@ import {
   Flex,
   Select,
   Input,
+  Popconfirm,
+  message,
 } from "antd";
 import {
   DeleteOutlined,
@@ -37,14 +39,14 @@ import UseDebounce from "../hooks/UseDebounce";
 const ProjectPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  
+  const [messageApi, contextHolder] = message.useMessage();
   const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [pages, setPages] = useState<number>(1);
-  const [search, setSearch]= useState<string>("")
-  const [searchStatus, setSearchStatus]= useState<string>("")
+  const [search, setSearch] = useState<string>("");
+  const [searchStatus, setSearchStatus] = useState<string>("");
   const [editableData, setEditableData] = useState<
-  Omit<Project, "status" | "taskCount">
+    Omit<Project, "status" | "taskCount">
   >({
     id: "",
     name: "",
@@ -61,7 +63,7 @@ const ProjectPage = () => {
     },
     {
       title: "Description",
-      dataIndex: "desc",
+      dataIndex: "id",
       width: "45%",
       ellipsis: true,
     },
@@ -74,10 +76,10 @@ const ProjectPage = () => {
           <Select
             value={record.status}
             style={{ width: 120 }}
-            onChange={() => UpdateStatus.mutate((record.id))}
+            onChange={() => UpdateStatus.mutate(record.id)}
             options={[
               { value: true, label: "Completed" },
-              { value: false, label: "Todo" },
+              { value: false, label: "In Progress" },
             ]}
           />
         );
@@ -103,10 +105,23 @@ const ProjectPage = () => {
               onClick={() => ReadyforEdit(record.id, record.name, record.desc)}
               icon={<EditOutlined />}
             ></Button>
-            <Button
-              onClick={() => Delete.mutate(record.id)}
-              icon={<DeleteOutlined />}
-            ></Button>
+            <Popconfirm
+              title="Delete the task"
+              description="Are you sure to delete this project?"
+              onConfirm={() => Delete.mutate(record.id)}
+              onCancel={() =>
+                messageApi.open({
+                  type: "error",
+                  content: "This is an error message",
+                })
+              }
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                icon={<DeleteOutlined />}
+              ></Button>
+            </Popconfirm>
           </Space>
         );
       },
@@ -136,6 +151,10 @@ const ProjectPage = () => {
       queryClient.invalidateQueries({
         queryKey: ["getProjects"],
       });
+      messageApi.open({
+        type: "success",
+        content: "Project Deleted",
+      });
     },
   });
 
@@ -151,19 +170,20 @@ const ProjectPage = () => {
     },
   });
 
-  const ClearSearch = ()=>{
-    setSearch("")
-    setSearchStatus("")
-  }
+  const ClearSearch = () => {
+    setSearch("");
+    setSearchStatus("");
+  };
 
-const { data, isLoading } = useQuery<Pagination<Project>>({
-  queryKey: ["getProjects", pages, debouncedSearch, searchStatus],
-  queryFn: () => GetAllProject(pages, debouncedSearch, searchStatus),
-  placeholderData: keepPreviousData,
-});
+  const { data, isLoading } = useQuery<Pagination<Project>>({
+    queryKey: ["getProjects", pages, debouncedSearch, searchStatus],
+    queryFn: () => GetAllProject(pages, 10, debouncedSearch, searchStatus),
+    placeholderData: keepPreviousData,
+  });
 
   return (
     <Flex gap={"medium"} vertical>
+      {contextHolder}
       <Row
         style={{
           backgroundColor: "#F5F5F5",
@@ -196,11 +216,15 @@ const { data, isLoading } = useQuery<Pagination<Project>>({
           borderRadius: "10px",
           padding: "5px 16px",
           alignItems: "center",
-          marginInline:"auto"
+          marginInline: "auto",
         }}
       >
         <Col span={8}>
-          <Input placeholder="Search the project" value={search} onChange={(e)=>setSearch(e.target.value)}/>
+          <Input
+            placeholder="Search the project"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </Col>
         <Col span={2}>
           <Select
@@ -210,7 +234,7 @@ const { data, isLoading } = useQuery<Pagination<Project>>({
             options={[
               { value: "", label: "All" },
               { value: "true", label: "Completed" },
-              { value: "false", label: "Todo" },
+              { value: "false", label: "In Progress" },
             ]}
           />
         </Col>

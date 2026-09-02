@@ -25,14 +25,3 @@ export const DeleteTask = async (id:string)=>{
   const res = await api.delete("/Task/DeleteTask" ,{params:{id:id}} )
   return res.data;
 }
-
-// DashBoard
-export const GetCount = async ()=>{
-  const res = await api.get("/Task/CountTask");
-  return res.data.result
-}
-
-export const GetCountStatus = async ()=>{
-  const res = await api.get("/Task/getCountStatus");
-  return res.data.result
-}

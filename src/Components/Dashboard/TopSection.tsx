@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Card, Col, Row } from "antd";
-import { GetCount } from "../../apis/TaskApi";
 import type { DashCardcount } from "../../apis/types";
 import {
   ClockCircleOutlined,
@@ -8,6 +7,7 @@ import {
   DatabaseOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
+import { GetCount } from "../../apis/DashBoardApi";
 
 const TopSection = () => {
   const { data, isFetching } = useQuery<DashCardcount>({
@@ -22,14 +22,14 @@ const TopSection = () => {
         marginInline: "auto",
         width: "100%",
         backgroundColor: "#F5F5F5",
-        padding: "5px",
+        padding: "10px",
         paddingBlock: "15px",
-        borderRadius: "12px",
+        borderRadius: "15px",
       }}
     >
       <Col span={6}>
         <Card
-          style={{ width: "100%", minHeight: "120px" }}
+          style={{ width: "100%", minHeight: "120px", borderRadius: "15px"}}
           variant="borderless"
           hoverable
         >
@@ -48,7 +48,7 @@ const TopSection = () => {
       </Col>
       <Col span={6}>
         <Card
-          style={{ width: "100%", minHeight: "120px" }}
+          style={{ width: "100%", minHeight: "120px", borderRadius: "15px" }}
           variant="borderless"
           hoverable
         >
@@ -67,7 +67,7 @@ const TopSection = () => {
       </Col>
       <Col span={6}>
         <Card
-          style={{ width: "100%", minHeight: "120px" }}
+          style={{ width: "100%", minHeight: "120px", borderRadius: "15px" }}
           variant="borderless"
           hoverable
         >
@@ -86,7 +86,7 @@ const TopSection = () => {
       </Col>
       <Col span={6}>
         <Card
-          style={{ width: "100%", minHeight: "120px" }}
+          style={{ width: "100%", minHeight: "120px",borderRadius: "15px" }}
           variant="borderless"
           hoverable
         >

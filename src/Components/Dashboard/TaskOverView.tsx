@@ -1,22 +1,23 @@
 import ReactECharts from "echarts-for-react";
 import { Card } from "antd";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { GetCountStatus } from "../../apis/TaskApi";
-import type { getalltask } from "../../apis/types";
+import type { StatusCount } from "../../apis/types";
+import { GetCountStatus } from "../../apis/DashBoardApi";
 const TaskOverView = () => {
-  const { data, isFetching } = useQuery<Omit<getalltask, "tasks">[]>({
+  
+  const { data, isFetching } = useQuery<StatusCount[]>({
     queryKey: ["StatusCount"],
     queryFn: GetCountStatus,
     placeholderData: keepPreviousData,
   });
-  console.log(data);
   
   const countData: { name: string; value: number }[] =
-    data?.map((e: Omit<getalltask, "tasks">) => ({
+    data?.map((e: StatusCount) => ({
       name: e.status,
       value: e.count,
     })) ?? [];
   const totalTasks = data?.reduce((sum, item) => sum + item.count, 0);
+
   const option = {
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
     series: [
@@ -88,6 +89,7 @@ const TaskOverView = () => {
         option={option}
         notMerge={true}
         lazyUpdate={true}
+        showLoading={isFetching}
         style={{ height: 245, width: "100%" }}
       />
     </Card>

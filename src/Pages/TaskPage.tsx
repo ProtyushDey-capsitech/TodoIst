@@ -1,11 +1,14 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { GetAllTask } from "../apis/TaskApi";
 import {
+  Badge,
   Button,
   Col,
   Collapse,
+  Empty,
   Flex,
   Row,
+  Spin,
   type CollapseProps,
 } from "antd";
 import type { getalltask, taskproject } from "../apis/types";
@@ -18,16 +21,29 @@ const TaskPage = () => {
   const [searchproject, setSearcProject] = useState<string[]>([]);
 
   const { data, isLoading } = useQuery<getalltask[]>({
-    queryKey: ["getTasks",search,searchproject],
-    queryFn: () => GetAllTask(search,searchproject),
+    queryKey: ["getTasks", search, searchproject],
+    queryFn: () => GetAllTask(search, searchproject),
     placeholderData: keepPreviousData,
   });
 
   const items: CollapseProps["items"] = data?.map((x: getalltask) => {
     return {
       key: x.status,
-      label: <Flex gap={10}><p>{x.status}</p> <p>{x.count}</p> </Flex>,
-      children: x.tasks.map((x: taskproject) => <p key={x.id}>{x.name} {"  "} {x.projectName}</p>),
+      label: (
+        <Flex gap={10}>
+          <p>{x.status}</p>{" "}
+          <Badge
+            className="site-badge-count-109"
+            count={x.count}
+            style={{ backgroundColor: "#52c41a" }}
+          />
+        </Flex>
+      ),
+      children: x.tasks.map((x: taskproject) => (
+        <p key={x.id}>
+          {x.name} {"  "} {x.projectName}
+        </p>
+      )),
     };
   });
 
@@ -73,7 +89,15 @@ const TaskPage = () => {
           setSearchProject={setSearcProject}
         />
       </Row>
-      <Collapse items={items} defaultActiveKey={["Todo", "Inprogress"]} />
+      {isLoading ? (
+        <Flex justify="center" align="center" style={{ height: 300 }}>
+          <Spin size="large" />
+        </Flex>
+      ) : data?.length ? (
+        <Collapse items={items} defaultActiveKey={["Todo", "Inprogress"]} />
+      ) : (
+        <Empty description="No tasks found" />
+      )}
     </Flex>
   );
 };

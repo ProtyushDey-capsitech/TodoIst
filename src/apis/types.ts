@@ -12,6 +12,7 @@ export interface LoginPayload {
   userName: string;
   password: string;
 }
+
 export interface SignupPayload {
   email: string;
   phoneNumber: string;
@@ -41,10 +42,9 @@ export interface taskproject extends Task{
   projectName: string
   projectId: string,
 }
-export interface getalltask{
-    status: string,
+
+export interface getalltask extends StatusCount{
     tasks:taskproject[]
-    count:number
 }
 
 export interface ProjectDataName {
@@ -70,3 +70,30 @@ export interface DashCardcount{
   totalProject: number;
   totalTask: number;
 }
+
+export interface PriorityCount{
+    priority: string,
+    count:number
+}
+
+export interface StatusCount{
+    status: string,
+    count:number
+}
+
+export interface ProjectStatusCount{
+  name:string
+  count:StatusCount[]
+}
+
+export interface RecentTask{
+      "id": string,
+      "projectId": string,
+      "name": string,
+      "desc": string,
+      "status": string,
+      "priority": string,
+      "projectName": string
+}
+
+
