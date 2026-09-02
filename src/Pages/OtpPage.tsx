@@ -135,15 +135,6 @@ const OtpPage = () => {
         </Button>
       </Form>
 
-      {/* <Text>
-        You don't have an account, please{" "}
-        <span
-          className="font-bold text-[#7160e8] cursor-pointer hover:text-[#5c2e91]"
-          onClick={() => navigate("/signup")}
-        >
-          Signup
-        </span>
-      </Text> */}
     </div>
   );
 };

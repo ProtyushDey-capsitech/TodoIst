@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Card, Col, Row } from "antd";
-import React from "react";
 import { GetCount } from "../../apis/TaskApi";
 import type { DashCardcount } from "../../apis/types";
 import {
@@ -16,7 +15,6 @@ const TopSection = () => {
     queryFn: GetCount,
     placeholderData: keepPreviousData,
   });
-  console.log(data);
   return (
     <Row
       gutter={15}

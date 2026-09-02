@@ -1,15 +1,25 @@
 import ReactECharts from "echarts-for-react";
 import { Card } from "antd";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { GetCountStatus } from "../../apis/TaskApi";
+import type { getalltask } from "../../apis/types";
 const TaskOverView = () => {
-  const taskData = [
-    { value: 335, name: "Todo" },
-    { value: 310, name: "In Progress" },
-    { value: 234, name: "Done" },
-  ];
-  const totalTasks = taskData.reduce((sum, item) => sum + item.value, 0);
+  const { data, isFetching } = useQuery<Omit<getalltask, "tasks">[]>({
+    queryKey: ["StatusCount"],
+    queryFn: GetCountStatus,
+    placeholderData: keepPreviousData,
+  });
+  console.log(data);
+  
+  const countData: { name: string; value: number }[] =
+    data?.map((e: Omit<getalltask, "tasks">) => ({
+      name: e.status,
+      value: e.count,
+    })) ?? [];
+  const totalTasks = data?.reduce((sum, item) => sum + item.count, 0);
   const option = {
     tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
-   series: [
+    series: [
       {
         name: "Tasks",
         type: "pie",
@@ -18,8 +28,8 @@ const TaskOverView = () => {
         avoidLabelOverlap: true,
         itemStyle: { borderRadius: 6, borderColor: "#fff", borderWidth: 3 },
         labelLine: { show: false },
-        
-        data: taskData,
+
+        data: countData,
       },
     ],
     graphic: [
@@ -70,7 +80,6 @@ const TaskOverView = () => {
             Task Overview
           </div>
           <div className="text-sm mt-1 text-[#94a3b8]">
-            
             Current task distribution
           </div>
         </div>
