@@ -49,3 +49,8 @@ export const RefreshAccessToken = async () => {
   const res = await api.get("Auth/Refresh");
   return res.data;
 };
+
+export const Me = async () => {
+  const res = await api.get("Auth/me");
+  return res.data.result
+};

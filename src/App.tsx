@@ -9,9 +9,10 @@ import Projectdata from "./Pages/Projectdata.tsx";
 import OtpPage from "./Pages/OtpPage.tsx";
 import DashBoardPages from "./routes/DashBoardPages.tsx";
 import TaskPage from "./Pages/TaskPage.tsx";
+
 function App() {
   return (
-    <>
+    
       <Routes>
         <Route element={<AnonymusRoute />}>
           <Route path="/login" element={<LoginPage />} />
@@ -27,7 +28,6 @@ function App() {
           <Route path="project/:id" element={<Projectdata/>}/>
         </Route>
       </Routes>
-    </>
   );
 }
 

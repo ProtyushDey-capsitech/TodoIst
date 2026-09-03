@@ -1,3 +1,8 @@
+export interface UserData{
+      "id": string,
+      "name": string,
+      "email": string,
+}
 
 export interface Task {
   id: string;

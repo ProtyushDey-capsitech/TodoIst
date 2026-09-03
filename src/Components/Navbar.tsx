@@ -1,7 +1,6 @@
 import Sider from "antd/es/layout/Sider";
-import { Button, ConfigProvider, Menu } from "antd";
+import {ConfigProvider, Menu } from "antd";
 import { DatabaseOutlined, CheckSquareOutlined, AppstoreOutlined } from "@ant-design/icons";
-import { LogoutUser } from "../apis/AuthApi";
 import { useLocation, useNavigate } from "react-router";
 import React from "react";
 
@@ -79,15 +78,6 @@ export const Navbar = () => {
           />
         </ConfigProvider>
       </div>
-      <Button
-        type="primary"
-        onClick={() => {
-          navigate("/login");
-          LogoutUser();
-        }}
-      >
-        Logout
-      </Button>
     </Sider>
   );
 };

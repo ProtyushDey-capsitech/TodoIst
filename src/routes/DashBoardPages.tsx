@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
-import { Button, Layout} from "antd";
+import { Avatar, Button, Layout, Popover } from "antd";
 import { Navbar } from "../Components/Navbar";
 import { Outlet, useLocation } from "react-router";
 import ProjectForm from "../Components/ProjectForm";
+import { RightOutlined, UserOutlined } from "@ant-design/icons";
+import UserComponent from "../Components/UserComponent";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import type { UserData } from "../apis/types";
+import { Me } from "../apis/AuthApi";
 
 const { Header, Content } = Layout;
 
 const DashBoardPages = () => {
   const location = useLocation();
   const [open, setOpen] = useState<boolean>(false);
-
-    useEffect(() => {
+  const [userOpen, setUserOpen] = useState<boolean>(false);
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
         event.preventDefault();
@@ -22,6 +27,12 @@ const DashBoardPages = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+    const { data } = useQuery<UserData>({
+    queryKey: ["User"],
+    queryFn: () => Me(),
+    placeholderData: keepPreviousData,
+  });
 
   return (
     <Layout style={{ minHeight: "100vh", backgroundColor: "white" }}>
@@ -39,13 +50,37 @@ const DashBoardPages = () => {
           }}
         >
           <h1 className="text-lg font-semibold">
-            {location.pathname=="/"?"DashBoard":location.pathname.slice(1)}
+            {location.pathname == "/"
+              ? "DashBoard"
+              : location.pathname.slice(1)}
           </h1>
-          <Button type="primary" onClick={() => setOpen(true)}>
-            + Add Project
-          </Button>
+          <div className="flex items-center justify-center gap-2">
+            <Button type="primary" onClick={() => setOpen(true)}>
+              + Add Project
+            </Button>
+            <Popover placement="topLeft" 
+            // title={text}
+             trigger="click"
+            open={userOpen}
+            onOpenChange={()=> setUserOpen(true)}
+              content={<a onClick={()=> setUserOpen(false)}><UserComponent data={data} /></a>}
+            >
+            <Button
+              color="default"
+              variant="outlined"
+              shape="round"
+              icon={<RightOutlined />}
+              iconPlacement="end"
+              style={{
+                padding: "5px",
+                width: "60px",
+              }}
+            >
+              <Avatar shape="circle" icon={<UserOutlined />} size="small"/>
+            </Button></Popover>
+          </div>
         </Header>
-        <Content style={{ margin: "15px"}}>
+        <Content style={{ margin: "15px" }}>
           <Outlet />
         </Content>
       </Layout>
