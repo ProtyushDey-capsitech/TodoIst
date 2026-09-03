@@ -1,33 +1,66 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Badge, Card, Flex, Listy, Tag, Typography } from "antd";
+import {
+  Badge,
+  Card,
+  Flex,
+  Grid,
+  List,
+  Tag,
+  Typography,
+} from "antd";
 import type { RecentTask } from "../../apis/types";
 import { useNavigate } from "react-router";
 import { GetRecentTask } from "../../apis/DashBoardApi";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
-  CloseCircleOutlined,
   ExclamationCircleOutlined,
-  SyncOutlined,
 } from "@ant-design/icons";
 
 const TaskList = () => {
   const navigate = useNavigate();
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
 
   const { data, isLoading } = useQuery<RecentTask[]>({
     queryKey: ["getRecentTask"],
-    queryFn: () => GetRecentTask(),
+    queryFn: GetRecentTask,
     placeholderData: keepPreviousData,
   });
 
-  const presets = [
-    { status: "success"},
-    { status: "processing"},
-    { status: "error"},
-  ];
+  const getStatusIcon = (status: string) => {
+    if (status === "Done") {
+      return (
+        <CheckCircleOutlined
+          style={{ color: "#15B40C", fontSize: 18 }}
+        />
+      );
+    }
+
+    if (status === "Inprogress") {
+      return (
+        <ClockCircleOutlined
+          style={{ color: "#FE8B07", fontSize: 18 }}
+        />
+      );
+    }
+
+    return (
+      <ExclamationCircleOutlined
+        style={{ color: "#f5222d", fontSize: 18 }}
+      />
+    );
+  };
+
+  const getPriorityColor = (priority: string) => {
+    if (priority === "Low") return "success";
+    if (priority === "High") return "error";
+    return "processing";
+  };
 
   return (
     <Card
+      loading={isLoading}
       style={{
         height: 365,
         borderRadius: 16,
@@ -35,8 +68,10 @@ const TaskList = () => {
       }}
       styles={{
         body: {
-          padding: "20px 22px",
+          padding: "10px",
           height: "100%",
+          display: "flex",
+          flexDirection: "column",
         },
       }}
     >
@@ -44,79 +79,137 @@ const TaskList = () => {
         justify="space-between"
         align="center"
         style={{
-          marginBottom: 12,
+          marginBottom: 8,
+          gap: 10,
         }}
       >
-        <div className="text-lg font-semibold text-[#0f172a]">Recent Tasks</div>
+        <Typography.Text strong style={{ fontSize: 18 }}>
+          Recent Tasks
+        </Typography.Text>
 
-        <div
-          className="text-sm font-medium cursor-pointer text-[#006aff]"
+        <Typography.Text
+          className="cursor-pointer"
+          style={{
+            color: "#006aff",
+            fontSize: 14,
+            whiteSpace: "nowrap",
+          }}
           onClick={() => navigate("/Tasks")}
         >
           Show all tasks →
-        </div>
+        </Typography.Text>
       </Flex>
+
       {data && data.length > 0 ? (
-        <Listy<RecentTask>
-          items={data}
+        <List<RecentTask>
+          dataSource={data}
           rowKey="id"
-          styles={{ item: { padding: "0" } }}
-          height={400}
-          itemRender={(item) => (
-            <Flex
-              gap="medium"
-              align="flex-start"
-              style={{ paddingInline: "5" }}
+          style={{
+            flex: 1,
+            overflow: "auto",
+          }}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                padding: " 8px",
+              }}
             >
-              <Flex vertical flex="auto" style={{ minWidth: 0 }}>
+              <Flex
+                vertical
+                style={{
+                  width: "100%",
+                  minWidth: 0,
+                }}
+              >
                 <Flex
+                  align="center"
                   justify="space-between"
-                  gap="small"
-                  style={{ height: "35px" }}
+                  gap={8}
+                  style={{
+                    width: "100%",
+                    minWidth: 0,
+                  }}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    {item.status == "Done" ? (
-                      <Badge
-                        count={
-                          <CheckCircleOutlined
-                            style={{ color: "#15B40C", fontSize: "18px" }}
-                          />
-                        }
-                      />
-                    ) : item.status == "Inprogress" ? (
-                      <Badge
-                        count={
-                          <ClockCircleOutlined
-                            style={{ color: "#FE8B07", fontSize: "18px" }}
-                          />
-                        }
-                      />
-                    ) : (
-                      <Badge
-                        count={
-                          <ExclamationCircleOutlined
-                            style={{ color: "#f5222d", fontSize: "18px" }}
-                          />
-                        }
-                      />
-                    )}
-                    <Typography.Title style={{ margin: "0" }} level={4}>
+                  <Flex
+                    align="center"
+                    gap={8}
+                    style={{
+                      minWidth: 0,
+                      flex: 1,
+                    }}
+                  >
+                    <Badge
+                      count={getStatusIcon(item.status)}
+                      style={{
+                        background: "transparent",
+                      }}
+                    />
+
+                    <Typography.Text
+                      strong
+                      ellipsis
+                      style={{
+                        minWidth: 0,
+                        flex: 1,
+                      }}
+                    >
                       {item.name}
-                    </Typography.Title>
-                    <Tag key={presets[item.priority=="Low"?0:item.priority=="High"?2:1].status} color={presets[item.priority=="Low"?0:item.priority=="High"?2:1].status}variant={"outlined"}>{item.priority}</Tag>
-                  </div>
-                  <Typography.Text type="secondary">
-                    {item.status}
+                    </Typography.Text>
+
+                    <Tag
+                      color={getPriorityColor(item.priority)}
+                      variant="outlined"
+                      style={{
+                        margin: 0,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {item.priority}
+                    </Tag>
+                  </Flex>
+
+                  <Typography.Text
+                    type="secondary"
+                    style={{
+                      flexShrink: 0,
+                      fontSize: 13,
+                    }}
+                  >
+                    {screens.xs
+                      ? item.status === "Inprogress"
+                        ? "Progress"
+                        : item.status
+                      : item.status}
                   </Typography.Text>
                 </Flex>
-                <Typography.Text type="secondary" ellipsis>
-                  -{item.projectName}
+
+                <Typography.Text
+                  type="secondary"
+                  ellipsis
+                  style={{
+                    marginLeft: 30,
+                    fontSize: 13,
+                  }}
+                >
+                  - {item.projectName}
                 </Typography.Text>
               </Flex>
-            </Flex>
+            </List.Item>
           )}
         />
-      ) : null}
+      ) : (
+        <Flex
+          justify="center"
+          align="center"
+          style={{
+            flex: 1,
+          }}
+        >
+          <Typography.Text type="secondary">
+            No recent tasks
+          </Typography.Text>
+        </Flex>
+      )}
     </Card>
   );
 };

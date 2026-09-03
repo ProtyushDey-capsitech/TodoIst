@@ -59,6 +59,9 @@ const ProjectForm = ({
       queryClient.invalidateQueries({
         queryKey: ["getProjects"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["getRecentProjects"],
+      });
     },
   });
 
@@ -72,6 +75,9 @@ const ProjectForm = ({
       queryClient.invalidateQueries({
         queryKey: ["getProjects"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["getRecentProjects"],
+      });
     },
   });
 
@@ -83,8 +89,8 @@ const ProjectForm = ({
   return (
     <Modal
       open={modalopen}
-      title={isEditing?"Edit project":"Add project"}
-       okText={"save"}
+      title={isEditing ? "Edit project" : "Add project"}
+      okText={"save"}
       onOk={() => formik.handleSubmit()}
       onCancel={handleClose}
       styles={{

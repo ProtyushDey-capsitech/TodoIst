@@ -60,12 +60,22 @@ const ProjectPage = () => {
       dataIndex: "name",
       width: "20%",
       ellipsis: true,
+      render: (_, record) => {
+        return record.name.length > 20
+          ? `${record.name.slice(0, 20)}...`
+          : record.name;
+      },
     },
     {
       title: "Description",
-      dataIndex: "id",
+      dataIndex: "desc",
       width: "45%",
       ellipsis: true,
+      render: (_, record) => {
+        return record.desc.length > 49
+          ? `${record.desc.slice(0, 50)}...`
+          : record.desc;
+      },
     },
     {
       title: "Status",
@@ -118,9 +128,7 @@ const ProjectPage = () => {
               okText="Yes"
               cancelText="No"
             >
-              <Button
-                icon={<DeleteOutlined />}
-              ></Button>
+              <Button icon={<DeleteOutlined />}></Button>
             </Popconfirm>
           </Space>
         );
@@ -194,12 +202,12 @@ const ProjectPage = () => {
           alignItems: "center",
         }}
       >
-        <Col span={23}>
+        <Col span={22} lg={23}>
           <p className="text-[16px] text-blue-500 font-medium">
             Manage your projects
           </p>
         </Col>
-        <Col span={1}>
+        <Col span={2} lg={1}>
           <Button
             icon={<ReloadOutlined />}
             shape="circle"
@@ -208,25 +216,26 @@ const ProjectPage = () => {
         </Col>
       </Row>
       <Row
-        gutter={20}
+        gutter={[20, 10]}
         style={{
           backgroundColor: "#F5F5F5",
           width: "100%",
-          height: "60px",
+          minHeight: "60px",
           borderRadius: "10px",
-          padding: "5px 16px",
+          padding: "5px ",
           alignItems: "center",
           marginInline: "auto",
         }}
       >
-        <Col span={8}>
+        <Col xs={24} sm={14}>
           <Input
             placeholder="Search the project"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </Col>
-        <Col span={2}>
+
+        <Col xs={20} sm={6}>
           <Select
             value={searchStatus}
             style={{ width: "100%" }}
@@ -238,7 +247,8 @@ const ProjectPage = () => {
             ]}
           />
         </Col>
-        <Col span={2}>
+
+        <Col xs={4} sm={2}>
           <Button
             icon={<ReloadOutlined />}
             shape="circle"
@@ -252,6 +262,7 @@ const ProjectPage = () => {
         style={{
           width: "100%",
         }}
+        scroll={{ x: "max-content" }}
         size="medium"
         dataSource={data?.results}
         onChange={onChange}
