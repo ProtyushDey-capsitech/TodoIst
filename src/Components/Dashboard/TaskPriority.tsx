@@ -5,7 +5,9 @@ import type { PriorityCount } from "../../apis/types";
 import { GetCountPriority } from "../../apis/DashBoardApi";
 
 const TaskPriority = () => {
-  const { data, isFetching } = useQuery<PriorityCount[]>({
+  const { data, 
+    // isFetching 
+  } = useQuery<PriorityCount[]>({
     queryKey: ["PriorityCount"],
     queryFn: GetCountPriority,
     placeholderData: keepPreviousData,

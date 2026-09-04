@@ -18,7 +18,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import type { ProjectData, Task } from "../apis/types";
+import type { Task } from "../apis/types";
 import { createTask, UpdateTask } from "../apis/TaskApi";
 // import { CreateProject, EditProject } from "../apis/ProjectApi";
 

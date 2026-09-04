@@ -10,7 +10,9 @@ import {
 import { GetCount } from "../../apis/DashBoardApi";
 
 const TopSection = () => {
-  const { data, isFetching } = useQuery<DashCardcount>({
+  const { data, 
+    // isFetching 
+  } = useQuery<DashCardcount>({
     queryKey: ["TaskCount"],
     queryFn: GetCount,
     placeholderData: keepPreviousData,

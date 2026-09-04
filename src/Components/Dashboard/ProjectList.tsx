@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Card, Col, Flex, Grid, List, Listy, Row, Typography } from "antd";
+import { Card, Col, Flex, Grid, Listy, Row, Typography } from "antd";
 import type { Pagination, Project } from "../../apis/types";
 import { GetAllProject } from "../../apis/ProjectApi";
 import { useNavigate } from "react-router";
@@ -9,7 +9,9 @@ const ProjectList = () => {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
-  const { data, isLoading } = useQuery<Pagination<Project>>({
+  const { data, 
+    // isLoading
+   } = useQuery<Pagination<Project>>({
     queryKey: ["getRecentProjects"],
     queryFn: () => GetAllProject(1, 5),
     placeholderData: keepPreviousData,

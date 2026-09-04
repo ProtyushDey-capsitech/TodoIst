@@ -30,7 +30,7 @@ import {
 
 import { GetProjectById } from "../apis/ProjectApi.ts";
 import TaskForm from "../Components/TaskForm.tsx";
-import type { ProjectData, Task } from "../apis/types.ts";
+import type { Task } from "../apis/types.ts";
 import { DeleteTask, UpdateTaskStatus } from "../apis/TaskApi.ts";
 
 const useStyles = makeStyles({
