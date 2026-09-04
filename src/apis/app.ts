@@ -3,9 +3,9 @@ import { LogoutUser, RefreshAccessToken } from "./AuthApi";
 import { store } from "../redux/store";
 import { LoginState } from "../redux/TokenCounterSlice";
 export const api = axios.create({
-  baseURL: "https://localhost:5001/api",
+  baseURL: import.meta.env.BASE_URL??"https://todo-backend-dotnet.onrender.com/api",
   withCredentials: true,
-  timeout: 5000,
+  // timeout: 5000,
 });
 
 api.interceptors.request.use(
