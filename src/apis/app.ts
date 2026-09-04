@@ -3,7 +3,7 @@ import { LogoutUser, RefreshAccessToken } from "./AuthApi";
 import { store } from "../redux/store";
 import { LoginState } from "../redux/TokenCounterSlice";
 export const api = axios.create({
-  baseURL: import.meta.env.BASE_URL??"https://todo-backend-dotnet.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_URL??"https://todo-backend-dotnet.onrender.com/api",
   withCredentials: true,
   // timeout: 5000,
 });
