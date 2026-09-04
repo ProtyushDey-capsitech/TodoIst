@@ -32,14 +32,14 @@ export const FIlterSection = ({
   useEffect(() => setSearchProject(data?.map((x) => x.id) || []), [data]);
   return (
     <>
-      <Col span={8}>
+      <Col xs={24} sm={14}>
         <Input
           placeholder="Search the task"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </Col>
-      <Col span={5}>
+      <Col xs={20} sm={9}>
         <Select
           value={searchproject}
           mode="multiple"
@@ -58,7 +58,7 @@ export const FIlterSection = ({
           })}
         />
       </Col>
-      <Col span={2}>
+      <Col xs={4} sm={1}>
         <Button
           icon={<ReloadOutlined />}
           shape="circle"

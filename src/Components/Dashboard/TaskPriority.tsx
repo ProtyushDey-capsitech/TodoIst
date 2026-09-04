@@ -99,28 +99,17 @@ const TaskPriority = () => {
       }}
       styles={{ body: { padding: "20px 22px", height: "100%" } }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 5,
-        }}
-      >
-        <div className="flex gap-2 items-end">
-          <div className="text-lg font-semibold text-[#0f172a]">
-            Tasks By Priority
-          </div>
-          <div className="text-sm mt-1 text-[#94a3b8]">
-            Current task priorities
-          </div>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:gap-3 sm:items-end w-full">
+        <p className="text-lg font-semibold text-[#0f172a]">
+          Tasks By Priority
+        </p>
+        <p className="text-sm mt-1 text-[#94a3b8]">Current task priorities</p>
       </div>
       <ReactECharts
         option={option}
         notMerge={true}
         lazyUpdate={true}
-        style={{ height: 245, width: "100%" }}
+        style={{ height: 220, width: "100%" }}
       />
     </Card>
   );

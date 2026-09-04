@@ -27,11 +27,13 @@ import {
   Input,
   Popconfirm,
   message,
+  Popover,
 } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   LinkOutlined,
+  MoreOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
 import UseDebounce from "../hooks/UseDebounce";
@@ -106,31 +108,40 @@ const ProjectPage = () => {
       width: "10%",
       render: (_, record) => {
         return (
-          <Space size="small">
-            <Button
-              onClick={() => navigate(`/project/${record.id}`)}
-              icon={<LinkOutlined />}
-            ></Button>
-            <Button
-              onClick={() => ReadyforEdit(record.id, record.name, record.desc)}
-              icon={<EditOutlined />}
-            ></Button>
-            <Popconfirm
-              title="Delete the task"
-              description="Are you sure to delete this project?"
-              onConfirm={() => Delete.mutate(record.id)}
-              onCancel={() =>
-                messageApi.open({
-                  type: "error",
-                  content: "This is an error message",
-                })
-              }
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button icon={<DeleteOutlined />}></Button>
-            </Popconfirm>
-          </Space>
+          <Popover
+            content={
+              <Space size="small">
+                <Button
+                  onClick={() => navigate(`/project/${record.id}`)}
+                  icon={<LinkOutlined />}
+                ></Button>
+                <Button
+                  onClick={() =>
+                    ReadyforEdit(record.id, record.name, record.desc)
+                  }
+                  icon={<EditOutlined />}
+                ></Button>
+                <Popconfirm
+                  title="Delete the task"
+                  description="Are you sure to delete this project?"
+                  onConfirm={() => Delete.mutate(record.id)}
+                  onCancel={() =>
+                    messageApi.open({
+                      type: "error",
+                      content: "This is an error message",
+                    })
+                  }
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button icon={<DeleteOutlined />}></Button>
+                </Popconfirm>
+              </Space>
+            }
+            arrow={false}
+          >
+            <Button icon={<MoreOutlined />}></Button>
+          </Popover>
         );
       },
     },
@@ -206,13 +217,6 @@ const ProjectPage = () => {
           <p className="text-[16px] text-blue-500 font-medium">
             Manage your projects
           </p>
-        </Col>
-        <Col span={2} lg={1}>
-          <Button
-            icon={<ReloadOutlined />}
-            shape="circle"
-            onClick={() => window.location.reload()}
-          />
         </Col>
       </Row>
       <Row

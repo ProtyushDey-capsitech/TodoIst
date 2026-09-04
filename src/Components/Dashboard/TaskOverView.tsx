@@ -4,13 +4,12 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { StatusCount } from "../../apis/types";
 import { GetCountStatus } from "../../apis/DashBoardApi";
 const TaskOverView = () => {
-  
   const { data, isFetching } = useQuery<StatusCount[]>({
     queryKey: ["StatusCount"],
     queryFn: GetCountStatus,
     placeholderData: keepPreviousData,
   });
-  
+
   const countData: { name: string; value: number }[] =
     data?.map((e: StatusCount) => ({
       name: e.status,
@@ -66,31 +65,27 @@ const TaskOverView = () => {
         borderRadius: 16,
         background: "#f5f5f5",
       }}
-      styles={{ body: { padding: "20px 22px", height: "100%" } }}
-    >
-      <div
-        style={{
+      styles={{
+        body: {
+          padding: "20px 22px",
+          height: "100%",
           display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 5,
-        }}
-      >
-        <div className="flex gap-2 items-end">
-          <div className="text-lg font-semibold text-[#0f172a]">
-            Task Overview
-          </div>
-          <div className="text-sm mt-1 text-[#94a3b8]">
-            Current task distribution
-          </div>
-        </div>
+          flexDirection: "column",
+        },
+      }}
+    >
+      <div className="flex flex-col sm:flex-row sm:gap-3 sm:items-end w-full">
+        <p className="text-lg font-semibold text-[#0f172a]">Task Overview</p>
+        <p className="text-sm mt-1 text-[#94a3b8]">Current task distribution</p>
       </div>
       <ReactECharts
         option={option}
         notMerge={true}
         lazyUpdate={true}
         showLoading={isFetching}
-        style={{ height: 245, width: "100%" }}
+        style={{ height: 200, width: "100%" }}
       />
     </Card>
   );

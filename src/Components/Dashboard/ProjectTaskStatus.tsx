@@ -50,10 +50,10 @@ const ProjectTaskStatus = () => {
 
     xAxis: {
       type: "category",
-      data: projects,
+      data: projects.map((e)=> e.length>7?`${e.slice(0,5)}...`:e),
       axisLabel: {
         interval: 0,
-        rotate: projects.length > 4 ? 25 : 0,
+        rotate:45,
         color: "#64748b",
       },
       axisLine: {
@@ -68,6 +68,7 @@ const ProjectTaskStatus = () => {
       minInterval: 1,
       axisLabel: {
         color: "#64748b",
+        
       },
       splitLine: {
         lineStyle: {
@@ -132,12 +133,12 @@ const ProjectTaskStatus = () => {
           marginBottom: 5,
         }}
       >
-        <div className="flex gap-2 items-end">
-          <div className="text-lg font-semibold text-[#0f172a]">
+        <div className="flex flex-col sm:flex-row sm:gap-3 sm:items-end w-full">
+        <p className="text-lg font-semibold text-[#0f172a]">
             Tasks By Project
-          </div>
+          </p>
 
-          <div className="text-sm mt-1 text-[#94a3b8]">Current task status</div>
+          <p className="text-sm mt-1 text-[#94a3b8]">Current task status</p>
         </div>
       </div>
 
@@ -147,7 +148,7 @@ const ProjectTaskStatus = () => {
         lazyUpdate={true}
         showLoading={isFetching}
         style={{
-          height: 235,
+          height: 250,
           width: "100%",
         }}
       />

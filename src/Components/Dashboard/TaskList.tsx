@@ -62,7 +62,7 @@ const TaskList = () => {
     <Card
       loading={isLoading}
       style={{
-        height: 365,
+        height: 430,
         borderRadius: 16,
         background: "#f5f5f5",
       }}
@@ -111,7 +111,7 @@ const TaskList = () => {
           renderItem={(item) => (
             <List.Item
               style={{
-                padding: " 8px",
+                padding: " 15px",
               }}
             >
               <Flex
@@ -187,7 +187,6 @@ const TaskList = () => {
                   type="secondary"
                   ellipsis
                   style={{
-                    marginLeft: 30,
                     fontSize: 13,
                   }}
                 >

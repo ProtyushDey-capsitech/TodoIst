@@ -1,10 +1,21 @@
 import Sider from "antd/es/layout/Sider";
-import {ConfigProvider, Menu } from "antd";
-import { DatabaseOutlined, CheckSquareOutlined, AppstoreOutlined } from "@ant-design/icons";
+import { ConfigProvider, Menu } from "antd";
+import {
+  DatabaseOutlined,
+  CheckSquareOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router";
 import React from "react";
 
-export const Navbar = () => {
+interface props {
+  setMobile: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  mobile: boolean;
+  open: boolean;
+}
+
+export const Navbar = ({ setMobile, setOpen, mobile, open }: props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -13,31 +24,49 @@ export const Navbar = () => {
     { label: "Projects", icon: DatabaseOutlined },
     { label: "Tasks", icon: CheckSquareOutlined },
   ].map((navitems) => ({
-    key: `/${navitems.label=="Dashboard"?"":navitems.label}`,
+    key: `/${navitems.label == "Dashboard" ? "" : navitems.label}`,
     icon: React.createElement(navitems.icon),
     label: `${navitems.label}`,
-     style: {
-    marginBottom: 5,
-  },
+    style: {
+      marginBottom: 5,
+    },
   }));
 
   return (
+    <>
+    {mobile && open && (
+  <div
+    className="fixed inset-0 bg-black/30 z-999"
+    onClick={() => setOpen(false)}
+  />
+)}
     <Sider
-      // breakpoint="lg"
-      // collapsedWidth="0"
+      breakpoint="lg"
+      collapsedWidth="0"
+      collapsed={!mobile ? undefined : !open}
       onBreakpoint={(broken) => {
-        console.log(broken);
+        setMobile(broken);
+
+        if (!broken) {
+          setOpen(false);
+        }
       }}
-      onCollapse={(collapsed, type) => {
-        console.log(collapsed, type);
+      trigger={null}
+      onCollapse={(collapsed) => {
+        setOpen(!collapsed);
       }}
-      width={260}
+      width={240}
       style={{
         height: "100vh",
         backgroundColor: "#F5F5F5",
-        padding: "10px",
-        paddingBlock: "20px",
-        boxShadow:"rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px"
+        boxShadow:
+          "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+        ...(mobile && {
+          position: "fixed",
+          left: 0,
+          top: 0,
+          zIndex: 1000,
+        }),
       }}
       styles={{
         body: {
@@ -48,7 +77,7 @@ export const Navbar = () => {
         },
       }}
     >
-      <div className=" flex flex-col gap-5">
+      <div className=" flex flex-col gap-5 p-5 px-2.5">
         <h1 className="text-3xl font-medium mx-auto">TaskManager</h1>
         <ConfigProvider
           theme={{
@@ -58,7 +87,7 @@ export const Navbar = () => {
                 itemSelectedColor: "#1677ff",
                 itemHoverBg: "#f5f5f5",
                 itemHoverColor: "#1677ff",
-                itemBorderRadius:8,
+                itemBorderRadius: 8,
                 itemHeight: 35,
               },
             },
@@ -74,10 +103,16 @@ export const Navbar = () => {
               fontWeight: 600,
               fontSize: 16,
             }}
-            onClick={(e)=>navigate(e.key)}
+            onClick={(e) => {
+              navigate(e.key);
+              if (mobile) {
+                setOpen(false);
+              }
+            }}
           />
         </ConfigProvider>
       </div>
     </Sider>
+    </>
   );
 };
