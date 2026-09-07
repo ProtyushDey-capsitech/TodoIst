@@ -13,7 +13,7 @@ const OtpPage = () => {
 
   const [otpError, setOtpError] = useState(false);
 
-  const sessionId = sessionStorage.getItem("otpSessionId") ?? "";
+  const userId = sessionStorage.getItem("otpSessionId") ?? "";
 
   const inputError = Yup.object().shape({
     otp: Yup.string()
@@ -46,7 +46,7 @@ const OtpPage = () => {
       setOtpError(false);
 
       otpMutation.mutate({
-        sessionId,
+        userId,
         otp: values.otp,
       });
     },

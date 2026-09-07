@@ -65,7 +65,7 @@ export interface ProjectData extends ProjectDataName {
 }
 
 export interface OtpPayload {
-  sessionId: string;
+  userId: string;
   otp: string;
 }
 

@@ -59,23 +59,16 @@ const TaskPage = () => {
           alignItems: "center",
         }}
       >
-        <Col span={23}>
+        <Col span={22} lg={23}>
           <p className="text-[16px] text-blue-500 font-medium">See all Tasks</p>
-        </Col>
-        <Col span={1}>
-          <Button
-            icon={<ReloadOutlined />}
-            shape="circle"
-            onClick={() => window.location.reload()}
-          />
         </Col>
       </Row>
       <Row
-        gutter={20}
+       gutter={[20, 10]}
         style={{
           backgroundColor: "#F5F5F5",
           width: "100%",
-          height: "60px",
+          minHeight: "60px",
           borderRadius: "10px",
           padding: "5px 16px",
           alignItems: "center",
