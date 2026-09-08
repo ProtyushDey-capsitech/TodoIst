@@ -33,7 +33,7 @@ const TopSection = () => {
       }}
     >
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
-      {isFetching? <Skeleton active />:
+      {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -54,7 +54,7 @@ const TopSection = () => {
         </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
-      {isFetching? <Skeleton active />:
+      {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -75,7 +75,7 @@ const TopSection = () => {
         </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
-      {isFetching? <Skeleton active />:
+      {isFetching? <Skeleton active  style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -96,7 +96,7 @@ const TopSection = () => {
         </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
-      {isFetching? <Skeleton active />:
+      {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
