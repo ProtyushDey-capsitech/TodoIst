@@ -8,7 +8,10 @@ import {
   Flex,
   Row,
   Spin,
+  Table,
+  Tag,
   type CollapseProps,
+  type TableColumnsType,
 } from "antd";
 import type { getalltask, taskproject } from "../apis/types";
 import { useState } from "react";
@@ -24,24 +27,72 @@ const TaskPage = () => {
     placeholderData: keepPreviousData,
   });
 
+  const columns: TableColumnsType<taskproject> = [
+    {
+      title: "Task",
+      dataIndex: "name",
+      key: "name",
+      width: 180,
+      ellipsis: true,
+    },
+    {
+      title: "Description",
+      dataIndex: "desc",
+      key: "desc",
+      width: 300,
+      ellipsis: true,
+    },
+    {
+      title: "Priority",
+      dataIndex: "priority",
+      key: "priority",
+      width: 130,
+      render: (priority) => (
+        <Tag
+          color={
+            priority === "HIGH"
+              ? "red"
+              : priority === "MEDIUM"
+                ? "orange"
+                : "green"
+          }
+        >
+          {priority}
+        </Tag>
+      ),
+    },
+    {
+      title: "Project",
+      dataIndex: "projectName",
+      key: "projectName",
+      width: 180,
+      ellipsis: true,
+    },
+  ];
+
   const items: CollapseProps["items"] = data?.map((x: getalltask) => {
     return {
       key: x.status,
       label: (
-        <Flex gap={10}>
-          <p>{x.status}</p>{" "}
-          <Badge
-            className="site-badge-count-109"
-            count={x.count}
-            style={{ backgroundColor: "#52c41a" }}
-          />
+        <Flex gap={10} align="center">
+          <p className="font-medium">{x.status}</p>
+          <Badge count={x.count} style={{ backgroundColor: "#52c41a" }} />
         </Flex>
       ),
-      children: x.tasks.map((x: taskproject) => (
-        <p key={x.id}>
-          {x.name} {"  "} {x.projectName}
-        </p>
-      )),
+      children: (
+        <Table<taskproject>
+          columns={columns}
+          loading={isLoading}
+          style={{
+            width: "100%",
+          }}
+          scroll={{ x: "max-content" }}
+          size="middle"
+          dataSource={x.tasks}
+          rowKey={(record) => record.id}
+          pagination={false}
+        />
+      ),
     };
   });
 
@@ -62,7 +113,7 @@ const TaskPage = () => {
         </Col>
       </Row>
       <Row
-       gutter={[20, 10]}
+        gutter={[20, 10]}
         style={{
           backgroundColor: "#F5F5F5",
           width: "100%",
@@ -85,7 +136,11 @@ const TaskPage = () => {
           <Spin size="large" />
         </Flex>
       ) : data?.length ? (
-        <Collapse items={items} defaultActiveKey={["Todo", "Inprogress"]} />
+        <Collapse
+          items={items}
+          defaultActiveKey={["Todo", "Inprogress"]}
+          styles={{ body: { padding: 0 } }}
+        />
       ) : (
         <Empty description="No tasks found" />
       )}
