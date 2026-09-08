@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Card, Col, Grid, Row } from "antd";
+import { Card, Col, Grid, Row, Skeleton } from "antd";
 import type { DashCardcount } from "../../apis/types";
 import {
   ClockCircleOutlined,
@@ -11,7 +11,7 @@ import { GetCount } from "../../apis/DashBoardApi";
 
 const TopSection = () => {
   const { data, 
-    // isFetching 
+    isFetching 
   } = useQuery<DashCardcount>({
     queryKey: ["TaskCount"],
     queryFn: GetCount,
@@ -33,6 +33,7 @@ const TopSection = () => {
       }}
     >
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active />:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -50,9 +51,10 @@ const TopSection = () => {
             </div>
             <h1 className="font-bold text-3xl">{data?.totalProject}</h1>
           </div>
-        </Card>
+        </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active />:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -70,9 +72,10 @@ const TopSection = () => {
             </div>
             <h1 className="font-bold text-3xl">{data?.totalTask}</h1>
           </div>
-        </Card>
+        </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active />:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -90,9 +93,10 @@ const TopSection = () => {
             </div>
             <h1 className="font-bold text-3xl">{data?.inprogressTask}</h1>
           </div>
-        </Card>
+        </Card>}
       </Col>
       <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active />:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
           styles={{ body: { padding: "12px" } }}
@@ -110,7 +114,7 @@ const TopSection = () => {
             </div>
             <h1 className="font-bold text-3xl">{data?.todoTask}</h1>
           </div>
-        </Card>
+        </Card>}
       </Col>
     </Row>
   );
