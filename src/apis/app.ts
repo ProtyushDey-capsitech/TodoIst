@@ -1,20 +1,12 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { LogoutUser, RefreshAccessToken } from "./AuthApi";
 import { store } from "../redux/store";
-import { LoginState } from "../redux/TokenCounterSlice";
+import { LoginState } from "../redux/UserSlice";
+import type { UserData } from "./types";
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL??"https://todo-backend-dotnet.onrender.com/api",
   withCredentials: true,
-  // timeout: 5000,
 });
-
-api.interceptors.request.use(
-  (con: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const token: string = localStorage.getItem("TO_Access") || "";
-    con.headers.Authorization = `Bearer ${token}`;
-    return con;
-  },
-);
 
 api.interceptors.response.use(
   (res) => res,
@@ -27,8 +19,8 @@ api.interceptors.response.use(
 
         const res = await RefreshAccessToken();
         if (res.status) {
-          const token: string = res.result.token;
-          store.dispatch(LoginState(token));
+          const userData: UserData = res.result;
+          store.dispatch(LoginState(userData));
           return api(originalRequest);
         } else {
           await LogoutUser();

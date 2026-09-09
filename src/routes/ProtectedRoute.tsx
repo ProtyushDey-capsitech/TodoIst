@@ -4,8 +4,9 @@ import { Navigate, Outlet } from "react-router";
 import { App } from "antd";
 
 const ProtectedRoute = () => {
-  const token: string = useSelector((state: RootState) => state.token.Token);
-  if (token)
+  const userid: string = useSelector((state: RootState) => state.user.id);
+
+  if (userid)
     return (
       <App>
         {" "}

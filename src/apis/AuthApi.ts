@@ -1,5 +1,5 @@
 import { store } from "../redux/store";
-import { LoginState, LogoutState } from "../redux/TokenCounterSlice";
+import { LoginState, LogoutState } from "../redux/UserSlice";
 import { api } from "./app";
 import type { LoginPayload, OtpPayload, SignupPayload } from "./types";
 
@@ -19,7 +19,7 @@ export const VerifyOtp = async (values :OtpPayload) => {
   console.log(values);
   try {
     const { data } = await api.post("Auth/VerifyOtp", values);
-    store.dispatch(LoginState(data.result.token));
+    store.dispatch(LoginState(data.result));
 
     return data;
   } catch (error) {
@@ -40,9 +40,9 @@ export const Signup = async (signupData: Omit<SignupPayload, "role">) => {
 };
 
 export const LogoutUser = async () => {
-  // const res = await api.post("Auth/Logout");
-  // return res.data
+  const res = await api.post("Auth/Logout");
   store.dispatch(LogoutState());
+  return res.data
 };
 
 export const RefreshAccessToken = async () => {
@@ -50,7 +50,3 @@ export const RefreshAccessToken = async () => {
   return res.data;
 };
 
-export const Me = async () => {
-  const res = await api.get("Auth/me");
-  return res.data.result
-};
