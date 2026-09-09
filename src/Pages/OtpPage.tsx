@@ -2,7 +2,6 @@ import { useNavigate } from "react-router";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
-import { useState } from "react";
 import { VerifyOtp } from "../apis/AuthApi";
 import type { OtpPayload } from "../apis/types";
 import { Button, Form, Input, Typography, message } from "antd";
