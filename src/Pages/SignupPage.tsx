@@ -89,7 +89,7 @@ const SignupPage = () => {
         autoComplete="off"
       >
         <Form.Item<string>
-          label="FirstName"
+          label="First name"
           name="name.first"
           validateStatus={
             formik.touched.name?.first && formik.errors.name?.first
@@ -112,7 +112,7 @@ const SignupPage = () => {
         </Form.Item>
 
         <Form.Item<string>
-          label="LastName"
+          label="Last name"
           name="name.last"
           validateStatus={
             formik.touched.name?.last && formik.errors.name?.last ? "error" : ""

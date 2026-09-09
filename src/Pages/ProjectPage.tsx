@@ -175,6 +175,12 @@ const ProjectPage = () => {
         content: "Project Deleted",
       });
     },
+    onError: () => {
+      messageApi.open({
+        type: "error",
+        content: "Project delete cancled",
+      });
+    },
   });
 
   const UpdateStatus = useMutation({
@@ -185,6 +191,16 @@ const ProjectPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["getProjects"],
+      });
+      messageApi.open({
+        type: "success",
+        content: "Satus updated",
+      });
+    },
+    onError: () => {
+      messageApi.open({
+        type: "error",
+        content: "Satus update failed",
       });
     },
   });

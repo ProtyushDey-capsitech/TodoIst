@@ -44,10 +44,8 @@ const ProjectForm = ({
           desc: "",
         },
     validationSchema: inputError,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: (values) => {
       isEditing ? projectEdit.mutate(values) : projectAdd.mutate(values);
-      resetForm();
-      modaldisplay();
     },
   });
 
@@ -62,6 +60,8 @@ const ProjectForm = ({
       queryClient.invalidateQueries({
         queryKey: ["getRecentProjects"],
       });
+      formik.resetForm();
+      modaldisplay();
     },
   });
 
@@ -78,6 +78,8 @@ const ProjectForm = ({
       queryClient.invalidateQueries({
         queryKey: ["getRecentProjects"],
       });
+      formik.resetForm();
+      modaldisplay();
     },
   });
 
@@ -93,6 +95,7 @@ const ProjectForm = ({
       okText={"save"}
       onOk={() => formik.handleSubmit()}
       onCancel={handleClose}
+      confirmLoading={projectAdd.isPending || projectEdit.isPending}
       styles={{
         title: {
           fontSize: 24,

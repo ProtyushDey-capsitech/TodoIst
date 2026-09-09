@@ -5,14 +5,12 @@ import * as Yup from "yup";
 import { useState } from "react";
 import { VerifyOtp } from "../apis/AuthApi";
 import type { OtpPayload } from "../apis/types";
-import { Button, Form, Input, Typography, Alert } from "antd";
+import { Button, Form, Input, Typography, message } from "antd";
 
 const OtpPage = () => {
   const navigate = useNavigate();
   const { Title} = Typography;
-
-  const [otpError, setOtpError] = useState(false);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const userId = sessionStorage.getItem("otpSessionId") ?? "";
 
   const inputError = Yup.object().shape({
@@ -25,13 +23,19 @@ const OtpPage = () => {
     mutationFn: (values: OtpPayload) => VerifyOtp(values),
 
     onSuccess: () => {
-      setOtpError(false);
       navigate("/");
       formik.resetForm();
+      messageApi.open({
+        type: "success",
+        content: "Logged in successfully",
+      });
     },
 
     onError: () => {
-      setOtpError(true);
+      messageApi.open({
+        type: "error",
+        content: "Otp varification failed",
+      });
     },
   });
 
@@ -43,7 +47,6 @@ const OtpPage = () => {
     validationSchema: inputError,
 
     onSubmit: (values) => {
-      setOtpError(false);
 
       otpMutation.mutate({
         userId,
@@ -76,6 +79,7 @@ const OtpPage = () => {
         max-[450px]:shadow-none
       "
     >
+      {contextHolder}
       <Title level={2} style={{ margin: 0, fontWeight: 600 }}>
         Verify otp
       </Title>
@@ -115,15 +119,6 @@ const OtpPage = () => {
             }}
           />
         </Form.Item>
-
-        {otpError && (
-          <Alert
-            type="error"
-            message="Invalid OTP"
-            showIcon
-            className="mb-4"
-          />
-        )}
 
         <Button
           type="primary"

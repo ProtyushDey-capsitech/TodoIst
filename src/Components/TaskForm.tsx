@@ -65,6 +65,7 @@ const TaskForm = ({
   const styles = useStyle();
   const queryClient = useQueryClient();
 
+
   const inputError = Yup.object().shape({
     name: Yup.string()
       .min(5, "Name is so small")
@@ -90,11 +91,11 @@ const TaskForm = ({
           priority: "Low",
         },
     validationSchema: inputError,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: (values) => {
       isEditing ? TaskEdit.mutate(values) : TaskAdd.mutate(values);
       console.log(values);
-      resetForm();
-      modaldisplay();
+
+      
     },
   });
 
@@ -103,6 +104,8 @@ const TaskForm = ({
       createTask(values, id),
     mutationKey: ["ProjectAdd"],
     onSuccess: () => {
+          formik.resetForm();
+      modaldisplay();
       queryClient.invalidateQueries({
         queryKey: ["getProjectTask"],
       });
@@ -115,6 +118,8 @@ const TaskForm = ({
     mutationKey: ["taskEdit"],
 
         onSuccess: () => {
+          formik.resetForm();
+      modaldisplay();
       queryClient.invalidateQueries({
         queryKey: ["getProjectTask"],
       });
@@ -136,7 +141,7 @@ const TaskForm = ({
 
             <DialogContent className={styles.Form}>
               <div className={styles.InputBox}>
-                <Label htmlFor="name">Project Name</Label>
+                <Label htmlFor="name">Task Name</Label>
 
                 <Input
                   id="name"
@@ -194,7 +199,7 @@ const TaskForm = ({
             </DialogContent>
 
             <DialogActions>
-              <Button appearance="primary" type="submit">
+              <Button appearance="primary" type="submit" disabled = {isEditing? TaskEdit.isPending : TaskAdd.isPending}>
                 {isEditing ? "Edit Task" : "Create Task"}
               </Button>
             </DialogActions>

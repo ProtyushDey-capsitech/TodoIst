@@ -32,6 +32,7 @@ import { GetProjectById } from "../apis/ProjectApi.ts";
 import TaskForm from "../Components/TaskForm.tsx";
 import type { Task } from "../apis/types.ts";
 import { DeleteTask, UpdateTaskStatus } from "../apis/TaskApi.ts";
+import { message } from "antd";
 
 const useStyles = makeStyles({
   page: {
@@ -365,8 +366,7 @@ const useStyles = makeStyles({
 const Projectdata = () => {
   const queryClient = useQueryClient();
   const styles = useStyles();
-
-  const [open, setOpen] = useState<boolean>(false);
+const [messageApi, contextHolder] = message.useMessage();  const [open, setOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [pages, setPages] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
@@ -408,7 +408,17 @@ const Projectdata = () => {
       queryClient.invalidateQueries({
         queryKey: ["getProjectTask"],
       });
+      messageApi.open({
+        type: "success",
+        content: "Satus updated",
+      });
     },
+    onError:()=>{
+      messageApi.open({
+        type: "error",
+        content: "Status update failed",
+      });
+    }
   });
 
   const Delete = useMutation({
@@ -418,7 +428,17 @@ const Projectdata = () => {
       queryClient.invalidateQueries({
         queryKey: ["getProjectTask"],
       });
+      messageApi.open({
+        type: "success",
+        content: "Task deleted",
+      });
     },
+        onError:()=>{
+      messageApi.open({
+        type: "error",
+        content: "Task delete failed",
+      });
+    }
   });
 
   const { data, isPending, isError } = useQuery({
@@ -461,6 +481,7 @@ useEffect(() => {
   return (
     <div className={styles.page}>
       {/* top*/}
+      {contextHolder}
       <div className={styles.topBar}>
         <Button
           appearance="subtle"
