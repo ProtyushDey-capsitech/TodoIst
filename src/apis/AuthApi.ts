@@ -1,7 +1,7 @@
 import { store } from "../redux/store";
 import { LoginState, LogoutState } from "../redux/UserSlice";
 import { api } from "./app";
-import type { LoginPayload, OtpPayload, SignupPayload } from "./types";
+import type { LoginPayload, OtpPayload, SignupPayload} from "./types";
 
 export const Login = async (loginData: LoginPayload) => {
   try {
@@ -45,8 +45,30 @@ export const LogoutUser = async () => {
   return res.data
 };
 
-export const RefreshAccessToken = async () => {
-  const res = await api.get("Auth/Refresh");
-  return res.data;
-};
 
+
+
+let refreshPromise: Promise<boolean> | null = null;
+
+export const RefreshAccessToken = async (): Promise<boolean> => {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+  
+  refreshPromise = (async () => {
+    try {
+      const res = await api.get("Auth/Refresh");
+
+      if (res.data.status) {
+        store.dispatch(LoginState(res.data.result));
+      }
+      return res.data.status;
+    } catch {
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+};

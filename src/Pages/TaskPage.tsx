@@ -1,22 +1,17 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { GetAllTask } from "../apis/TaskApi";
 import {
-  Badge,
   Col,
-  Collapse,
   Empty,
   Flex,
   Row,
   Spin,
-  Table,
-  Tag,
-  type CollapseProps,
-  type TableColumnsType,
 } from "antd";
-import type { getalltask, taskproject } from "../apis/types";
-import { useState } from "react";
+import type { getalltask} from "../apis/types";
+import { lazy, Suspense, useState } from "react";
 import { FIlterSection } from "../Components/TaskPage/FIlterSection";
-
+// import ListTask from "../Components/TaskPage/ListTask";
+import { GetAllTask } from "../apis/TaskApi";
+const ListTask = lazy(() => import("../Components/TaskPage/ListTask"));
 const TaskPage = () => {
   const [search, setSearch] = useState<string>("");
   const [searchproject, setSearcProject] = useState<string[]>([]);
@@ -27,76 +22,10 @@ const TaskPage = () => {
     placeholderData: keepPreviousData,
   });
 
-  const columns: TableColumnsType<taskproject> = [
-    {
-      title: "Task",
-      dataIndex: "name",
-      key: "name",
-      width: 180,
-      ellipsis: true,
-    },
-    {
-      title: "Description",
-      dataIndex: "desc",
-      key: "desc",
-      width: 300,
-      ellipsis: true,
-    },
-    {
-      title: "Priority",
-      dataIndex: "priority",
-      key: "priority",
-      width: 130,
-      render: (priority) => (
-        <Tag
-          color={
-            priority === "HIGH"
-              ? "red"
-              : priority === "MEDIUM"
-                ? "orange"
-                : "green"
-          }
-        >
-          {priority}
-        </Tag>
-      ),
-    },
-    {
-      title: "Project",
-      dataIndex: "projectName",
-      key: "projectName",
-      width: 180,
-      ellipsis: true,
-    },
-  ];
 
-  const items: CollapseProps["items"] = data?.map((x: getalltask) => {
-    return {
-      key: x.status,
-      label: (
-        <Flex gap={10} align="center">
-          <p className="font-medium">{x.status}</p>
-          <Badge count={x.count} style={{ backgroundColor: "#52c41a" }} />
-        </Flex>
-      ),
-      children: (
-        <Table<taskproject>
-          columns={columns}
-          loading={isLoading}
-          style={{
-            width: "100%",
-          }}
-          scroll={{ x: "max-content" }}
-          size="middle"
-          dataSource={x.tasks}
-          rowKey={(record) => record.id}
-          pagination={false}
-        />
-      ),
-    };
-  });
 
   return (
+    
     <Flex gap={"medium"} vertical>
       <Row
         style={{
@@ -136,11 +65,11 @@ const TaskPage = () => {
           <Spin size="large" />
         </Flex>
       ) : data?.length ? (
-        <Collapse
-          items={items}
-          defaultActiveKey={["Todo", "Inprogress"]}
-          styles={{ body: { padding: 0 } }}
-        />
+        <Suspense
+				fallback={<div>Component2 are loading please wait...</div>}
+			>
+        <ListTask data={data} isLoading={isLoading} />
+			</Suspense>
       ) : (
         <Empty description="No tasks found" />
       )}
