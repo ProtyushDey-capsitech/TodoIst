@@ -1,4 +1,4 @@
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Tag, Typography } from "antd";
 import { useNavigate } from "react-router";
 import { LogoutUser} from "../apis/AuthApi";
@@ -6,9 +6,11 @@ import type { UserData } from "../apis/types";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 
+interface UserComponentProps {
+  cangepassword: () => void;
+}
 
-
-const UserComponent = () => {
+const UserComponent = ({ cangepassword }: UserComponentProps) => {
   const navigate = useNavigate();
   const data: UserData = useSelector((state: RootState) => state.user);
 console.log(data,"user")
@@ -20,7 +22,18 @@ console.log(data,"user")
         <Tag color={"blue"} variant={"outlined"}>
           {data?.email}
         </Tag>
-      </div>
+      </div >
+      <div className="w-full flex justify-center items-center gap-5">
+      <Button
+        icon={<LockOutlined />}
+        color="primary"
+        variant="outlined"
+        onClick={() => {
+          cangepassword();
+        }}
+      >
+        Change password
+      </Button>
       <Button
         icon={<LogoutOutlined />}
         color="danger"
@@ -31,7 +44,7 @@ console.log(data,"user")
         }}
       >
         Logout
-      </Button>
+      </Button></div>
     </div>
   );
 };

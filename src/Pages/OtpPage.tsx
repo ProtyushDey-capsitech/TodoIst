@@ -2,13 +2,13 @@ import { useNavigate } from "react-router";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
-import { VerifyOtp } from "../apis/AuthApi";
+import { ResendOTP, VerifyOtp } from "../apis/AuthApi";
 import type { OtpPayload } from "../apis/types";
 import { Button, Form, Input, Typography, message } from "antd";
 
 const OtpPage = () => {
   const navigate = useNavigate();
-  const { Title} = Typography;
+  const { Title } = Typography;
   const [messageApi, contextHolder] = message.useMessage();
   const userId = sessionStorage.getItem("otpSessionId") ?? "";
 
@@ -38,6 +38,24 @@ const OtpPage = () => {
     },
   });
 
+  const ResendOtpMutation = useMutation({
+    mutationFn: () => ResendOTP(userId),
+
+    onSuccess: () => {
+      messageApi.open({
+        type: "success",
+        content: "OTP resent successfully",
+      });
+    },
+
+    onError: () => {
+      messageApi.open({
+        type: "error",
+        content: "Failed to resend OTP",
+      });
+    },
+  });
+
   const formik = useFormik({
     initialValues: {
       otp: "",
@@ -46,7 +64,6 @@ const OtpPage = () => {
     validationSchema: inputError,
 
     onSubmit: (values) => {
-
       otpMutation.mutate({
         userId,
         otp: values.otp,
@@ -92,7 +109,7 @@ const OtpPage = () => {
         initialValues={{ remember: true }}
         onFinish={formik.handleSubmit}
         autoComplete="off"
-        styles={{root:{display:"flex", flexDirection:"column", gap:20}}}
+        styles={{ root: { display: "flex", flexDirection: "column", gap: 20 } }}
       >
         <Form.Item<string>
           label="OTP"
@@ -101,9 +118,7 @@ const OtpPage = () => {
             formik.touched.otp && formik.errors.otp ? "error" : ""
           }
           help={
-            formik.touched.otp && formik.errors.otp
-              ? formik.errors.otp
-              : ""
+            formik.touched.otp && formik.errors.otp ? formik.errors.otp : ""
           }
         >
           <Input.OTP
@@ -128,7 +143,12 @@ const OtpPage = () => {
           Verify otp
         </Button>
       </Form>
-
+      <p
+        className="font-semibold text-md text-blue-500 hover:text-blue-700 cursor-pointer"
+        onClick={() => ResendOtpMutation.mutate()}
+      >
+        Resend OTP
+      </p>
     </div>
   );
 };

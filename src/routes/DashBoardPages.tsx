@@ -5,6 +5,10 @@ import { Outlet, useLocation } from "react-router";
 import ProjectForm from "../Components/ProjectForm";
 import { MenuOutlined, PlusOutlined, RightOutlined, UserOutlined } from "@ant-design/icons";
 import UserComponent from "../Components/UserComponent";
+import CahngePassword from "../Components/CahngePassword";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+import type { UserData } from "../apis/types";
 const { Header, Content } = Layout;
 
 const DashBoardPages = () => {
@@ -13,6 +17,8 @@ const DashBoardPages = () => {
   const [userOpen, setUserOpen] = useState<boolean>(false);
   const [mobile, setMobile] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+    const data: UserData = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -82,7 +88,7 @@ const DashBoardPages = () => {
             onOpenChange={(value) => setUserOpen(value)}
             content={
               <a onClick={() => setUserOpen(false)}>
-                <UserComponent />
+                <UserComponent cangepassword={() => setChangePasswordOpen(true)} />
               </a>
             }
           >
@@ -135,7 +141,15 @@ const DashBoardPages = () => {
       isEditing={false}
       EditableData={{ name: "", desc: "", id: "" }}
     />
+    <CahngePassword
+      modalopen={changePasswordOpen}
+      modaldisplay={() => {
+        setChangePasswordOpen(false);
+      }}
+      userId={data.id}
+    />
   </Layout>
+
 );
 };
 

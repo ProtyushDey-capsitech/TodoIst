@@ -101,4 +101,10 @@ export interface RecentTask{
       "projectName": string
 }
 
+export interface changepasswordPayload{
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+}
+
 
