@@ -1,7 +1,8 @@
 export interface UserData{
-      "id": string,
-      "name": string,
-      "email": string,
+      id: string;
+      name:string;
+      email: string;
+      role:string
 }
 
 export interface Task {
@@ -76,6 +77,11 @@ export interface DashCardcount{
   totalTask: number;
 }
 
+export interface AdminDashCardcount extends DashCardcount{
+  activeProject: number;
+  totalEmployee: number;
+}
+
 export interface PriorityCount{
     priority: string,
     count:number
@@ -105,6 +111,13 @@ export interface changepasswordPayload{
   currentPassword: string,
   newPassword: string,
   confirmPassword: string
+}
+
+export interface employee{
+  name:string,
+  email:string,
+  role:string,
+  id:string
 }
 
 

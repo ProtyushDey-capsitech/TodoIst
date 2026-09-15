@@ -1,11 +1,22 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { Navigate, Outlet } from "react-router";
+
 const AnonymusRoute = () => {
-  const Userid: string = useSelector((state: RootState) => state.user.id);
-  console.log(`id: ${Userid}`);
-  if (Userid) return <Navigate to="/" replace />;
-  else return <Outlet />;
+
+    const userId = useSelector(
+        (state: RootState) => state.user.id
+    );
+
+    console.log("User ID:", userId);
+
+    // User is already logged in
+    if (userId) {
+        return <Navigate to="/" replace />;
+    }
+
+    // User is not logged in
+    return <Outlet />;
 };
 
 export default AnonymusRoute;

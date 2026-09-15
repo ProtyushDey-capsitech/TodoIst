@@ -4,6 +4,7 @@ import {
   DatabaseOutlined,
   CheckSquareOutlined,
   AppstoreOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router";
 import React from "react";
@@ -13,9 +14,10 @@ interface props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   mobile: boolean;
   open: boolean;
+  role: string;
 }
 
-export const Navbar = ({ setMobile, setOpen, mobile, open }: props) => {
+export const Navbar = ({ setMobile, setOpen, mobile, open, role }: props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -23,7 +25,11 @@ export const Navbar = ({ setMobile, setOpen, mobile, open }: props) => {
     { label: "Dashboard", icon: AppstoreOutlined },
     { label: "Projects", icon: DatabaseOutlined },
     { label: "Tasks", icon: CheckSquareOutlined },
-  ].map((navitems) => ({
+    { label: "Employee", icon: UserOutlined },
+  ].filter((e)=>{
+    if(role!="ADMIN") return  e.label!= "Employee"
+    else return e
+  }).map((navitems) => ({
     key: `/${navitems.label == "Dashboard" ? "" : navitems.label}`,
     icon: React.createElement(navitems.icon),
     label: `${navitems.label}`,
@@ -34,85 +40,85 @@ export const Navbar = ({ setMobile, setOpen, mobile, open }: props) => {
 
   return (
     <>
-    {mobile && open && (
-  <div
-    className="fixed inset-0 bg-black/30 z-999"
-    onClick={() => setOpen(false)}
-  />
-)}
-    <Sider
-      breakpoint="lg"
-      collapsedWidth="0"
-      collapsed={!mobile ? undefined : !open}
-      onBreakpoint={(broken) => {
-        setMobile(broken);
+      {mobile && open && (
+        <div
+          className="fixed inset-0 bg-black/30 z-999"
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <Sider
+        breakpoint="lg"
+        collapsedWidth="0"
+        collapsed={!mobile ? undefined : !open}
+        onBreakpoint={(broken) => {
+          setMobile(broken);
 
-        if (!broken) {
-          setOpen(false);
-        }
-      }}
-      trigger={null}
-      onCollapse={(collapsed) => {
-        setOpen(!collapsed);
-      }}
-      width={240}
-      style={{
-        height: "100vh",
-        backgroundColor: "#F5F5F5",
-        boxShadow:
-          "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
-        ...(mobile && {
-          position: "fixed",
-          left: 0,
-          top: 0,
-          zIndex: 1000,
-        }),
-      }}
-      styles={{
-        body: {
-          display: "flex",
-          flexDirection: "column",
-          gap: "100px",
-          justifyContent: "space-between",
-        },
-      }}
-    >
-      <div className=" flex flex-col gap-5 p-5 px-2.5">
-        <h1 className="text-3xl font-medium mx-auto">TaskManager</h1>
-        <ConfigProvider
-          theme={{
-            components: {
-              Menu: {
-                itemSelectedBg: "#E8EDF2",
-                itemSelectedColor: "#1677ff",
-                itemHoverBg: "#f5f5f5",
-                itemHoverColor: "#1677ff",
-                itemBorderRadius: 8,
-                itemHeight: 35,
+          if (!broken) {
+            setOpen(false);
+          }
+        }}
+        trigger={null}
+        onCollapse={(collapsed) => {
+          setOpen(!collapsed);
+        }}
+        width={240}
+        style={{
+          height: "100vh",
+          backgroundColor: "#F5F5F5",
+          boxShadow:
+            "rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px",
+          ...(mobile && {
+            position: "fixed",
+            left: 0,
+            top: 0,
+            zIndex: 1000,
+          }),
+        }}
+        styles={{
+          body: {
+            display: "flex",
+            flexDirection: "column",
+            gap: "100px",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <div className=" flex flex-col gap-5 p-5 px-2.5">
+          <h1 className="text-3xl font-medium mx-auto">TaskManager</h1>
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemSelectedBg: "#E8EDF2",
+                  itemSelectedColor: "#1677ff",
+                  itemHoverBg: "#f5f5f5",
+                  itemHoverColor: "#1677ff",
+                  itemBorderRadius: 8,
+                  itemHeight: 35,
+                },
               },
-            },
-          }}
-        >
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={items}
-            style={{
-              background: "transparent",
-              border: "none",
-              fontWeight: 600,
-              fontSize: 16,
             }}
-            onClick={(e) => {
-              navigate(e.key);
-              if (mobile) {
-                setOpen(false);
-              }
-            }}
-          />
-        </ConfigProvider>
-      </div>
-    </Sider>
+          >
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={items}
+              style={{
+                background: "transparent",
+                border: "none",
+                fontWeight: 600,
+                fontSize: 16,
+              }}
+              onClick={(e) => {
+                navigate(e.key);
+                if (mobile) {
+                  setOpen(false);
+                }
+              }}
+            />
+          </ConfigProvider>
+        </div>
+      </Sider>
     </>
   );
 };

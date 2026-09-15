@@ -24,3 +24,13 @@ export const GetRecentTask = async ()=>{
   const res = await api.get("/DashBoard/GetRecentTask");
   return res.data.result
 }
+
+export const getEmployeeList = async (page:number, search:string)=>{
+  const res = await api.get("/Auth/EmployeeList",{params: { Page: page, Search: search}});
+  return res.data.result
+}
+
+export const AdminGetCount = async ()=>{
+  const res = await api.get("/DashBoard/AdminCountTask");
+  return res.data.result
+}

@@ -7,6 +7,7 @@ const initialState: UserData = {
   name: "",
   email: "",
   id: "",
+  role:""
 };
 
 const todoCounterSlice = createSlice({
@@ -21,12 +22,14 @@ const todoCounterSlice = createSlice({
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.id = action.payload.id;
+      state.role = action.payload.role
     },
 
     LogoutState: (state) => {
       state.name = "";
       state.email = "";
       state.id = "";
+      state.role="";
     },
   },
 });

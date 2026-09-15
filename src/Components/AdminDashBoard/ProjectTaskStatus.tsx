@@ -114,7 +114,7 @@ const ProjectTaskStatus = () => {
   return (
     <Card
       style={{
-        height: 300,
+        height: 360,
         borderRadius: 16,
         background: "#f5f5f5",
       }}

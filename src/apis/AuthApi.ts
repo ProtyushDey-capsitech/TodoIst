@@ -83,3 +83,13 @@ export const RefreshAccessToken = async (): Promise<boolean> => {
 
   return refreshPromise;
 };
+
+export const AddEmployee = async (signupData: SignupPayload) => {
+  try {
+    const { data } = await api.post("Auth/Adduser", signupData);
+    return data;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  }
+};

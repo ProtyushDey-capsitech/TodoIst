@@ -20,7 +20,7 @@ const ProjectList = () => {
   return (
     <Card
       style={{
-        height: 430,
+        height: 375,
         borderRadius: 16,
         background: "#f5f5f5",
         display: "flex",

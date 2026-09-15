@@ -1,23 +1,26 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Card, Col, Grid, Row, Skeleton } from "antd";
-import type { DashCardcount } from "../../apis/types";
+import type { AdminDashCardcount, DashCardcount } from "../../apis/types";
 import {
   ClockCircleOutlined,
   ContainerOutlined,
   DatabaseOutlined,
+  ExceptionOutlined,
   ExclamationCircleOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { GetCount } from "../../apis/DashBoardApi";
+import { AdminGetCount } from "../../apis/DashBoardApi";
 
 const TopSection = () => {
   const { data, 
     isFetching 
-  } = useQuery<DashCardcount>({
-    queryKey: ["TaskCount"],
-    queryFn: GetCount,
+
+  } = useQuery<AdminDashCardcount>({
+    queryKey: ["AdminTaskCount"],
+    queryFn: AdminGetCount,
     placeholderData: keepPreviousData,
-  });
-    const { useBreakpoint } = Grid;
+  }); 
+  const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
   return (
@@ -32,7 +35,8 @@ const TopSection = () => {
         borderRadius: "15px",
       }}
     >
-      <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+
+       <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"0px 7px 7px 7px":"7px 7px 7px 7px"}}>
       {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
@@ -53,7 +57,28 @@ const TopSection = () => {
           </div>
         </Card>}
       </Col>
-      <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"0px 7px 7px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
+        <Card
+          style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
+          styles={{ body: { padding: "12px" } }}
+          variant="borderless"
+          hoverable
+        >
+          <div className="flex items-center justify-between">
+            <div className="text-lg font-medium flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#EBE5F5] flex justify-center items-center rounded-full">
+                <ExceptionOutlined
+                  style={{ fontSize: "15px", color: "#7E57C2" }}
+                />
+              </div>
+              <p className="font-semibold text-lg">Active Projects</p>
+            </div>
+            <h1 className="font-bold text-3xl">{data?.activeProject}</h1>
+          </div>
+        </Card>}
+      </Col>
+       <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
       {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
@@ -74,7 +99,7 @@ const TopSection = () => {
           </div>
         </Card>}
       </Col>
-      <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
       {isFetching? <Skeleton active  style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
@@ -95,7 +120,7 @@ const TopSection = () => {
           </div>
         </Card>}
       </Col>
-      <Col span={24} md={12} lg={6} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"0px 7px 0px 7px":"7px 7px 7px 7px"}}>
       {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
         <Card
           style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
@@ -116,6 +141,28 @@ const TopSection = () => {
           </div>
         </Card>}
       </Col>
+      <Col span={24} md={12} lg={8} style={{ padding: screens.lg ?"7px 7px 0px 7px":"7px 7px 7px 7px"}}>
+      {isFetching? <Skeleton active style={{ width: "100%", minHeight: "60px"}}/>:
+        <Card
+          style={{ width: "100%", minHeight: "60px", borderRadius: "15px" }}
+          styles={{ body: { padding: "12px" } }}
+          variant="borderless"
+          hoverable
+        >
+          <div className="flex items-center justify-between">
+            <div className="text-lg font-medium flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#e6e4e4] flex justify-center items-center rounded-full">
+                <UserOutlined
+                  style={{ fontSize: "15px", color: "#000000" }}
+                />
+              </div>
+              <p className="font-semibold text-lg">Total Employee</p>
+            </div>
+            <h1 className="font-bold text-3xl">{data?.totalEmployee}</h1>
+          </div>
+        </Card>}
+      </Col>
+
     </Row>
   );
 };

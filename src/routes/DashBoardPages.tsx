@@ -46,6 +46,7 @@ const DashBoardPages = () => {
       setOpen={setNavOpen}
       mobile={mobile}
       open={navOpen}
+      role={data.role}
     />
 
     <Layout

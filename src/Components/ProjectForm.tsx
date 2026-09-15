@@ -60,6 +60,9 @@ const ProjectForm = ({
       queryClient.invalidateQueries({
         queryKey: ["getRecentProjects"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["TaskCount"],
+      });
       formik.resetForm();
       modaldisplay();
     },
