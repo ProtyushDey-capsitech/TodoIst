@@ -11,6 +11,7 @@ import Employee from "./Pages/Employee.tsx";
 import { RolesAuthRoute } from "./routes/RolesRoute.tsx";
 import RoleDashboard from "./routes/RoleDashboard.tsx";
 import TaskPage from "./Pages/TaskPage.tsx";
+import Unauthorized from "./Pages/Unauthorized.tsx";
 
 function App() {
   return (
@@ -40,7 +41,9 @@ function App() {
           />
           <Route path="/Projects" element={<ProjectPage />} />
           <Route path="/Tasks" element={<TaskPage />} />
-          {/* <Route path="/Employee" element={<Employee/>} />  */}
+          <Route path="/Unauthorized" element={<Unauthorized/>} /> 
+          <Route path="*" element={<Unauthorized/>} /> 
+
         </Route>
         <Route path="project/:id" element={<Projectdata />} />
       </Route>
