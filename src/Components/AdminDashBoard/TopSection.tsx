@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Card, Col, Grid, Row, Skeleton } from "antd";
-import type { AdminDashCardcount, DashCardcount } from "../../apis/types";
+import type { AdminDashCardcount} from "../../apis/types";
 import {
   ClockCircleOutlined,
   ContainerOutlined,
